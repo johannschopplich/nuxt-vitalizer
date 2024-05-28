@@ -12,7 +12,7 @@ export interface ModuleOptions {
    *
    * @default 'none'
    */
-  prefetchStrategy?: 'none' | 'excludeImages'
+  prefetchStrategy?: 'none' | 'exceptImages'
   /**
    * List of image extensions to remove from the manifest.
    *
@@ -47,7 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
           // Remove all prefetch links, since they impact LCP negatively
           file.dynamicImports = []
         }
-        else if (options.prefetchStrategy === 'excludeImages') {
+        else if (options.prefetchStrategy === 'exceptImages') {
           if (file.assets) {
             file.assets = file.assets.filter(
               asset => options.imageExtensions!.every(ext => !asset.endsWith(`.${ext}`)),

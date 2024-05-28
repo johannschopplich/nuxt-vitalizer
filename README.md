@@ -2,11 +2,13 @@
 
 # Nuxt LCP Speedup
 
-A [Nuxt](https://nuxt.com) _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
+A [Nuxt](https://nuxt.com) _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights. This may improve your SEO visibility.
 
 ## Why?
 
 Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights. Each dynamic import results in a `<link rel="prefetch">` tag being added to the HTML. This causes the browser to prefetch all dynamic imports, delaying the rendering of the main content. Even if the application feels fast, the LCP score can be negatively affected by the prefetching of dynamic imports and image assets. This module addresses this issue by removing prefetchable dependencies from the build manifest.
+
+![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.jpg)
 
 The module supports two prefetch strategies that hook into the Nuxt build process to optimize the LCP score: `none` and `exceptImages`.
 

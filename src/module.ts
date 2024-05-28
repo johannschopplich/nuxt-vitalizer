@@ -33,9 +33,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     nuxt.hook('build:manifest', (manifest) => {
-      for (const key in manifest) {
-        const file = manifest[key]
-
+      for (const file of Object.values(manifest)) {
         // Remove all prefetch links from the manifest
         file.dynamicImports = []
 

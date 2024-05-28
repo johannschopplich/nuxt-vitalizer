@@ -8,7 +8,7 @@
 
 ## Why?
 
-Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights. All dynamic imports are prefetched by default, which can lead to unnecessary network requests and delay the rendering of the main content. This module addresses the issue by disabling prefetching of dynamic imports and filtering image assets from the build manifest.
+Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights. Each dynamic import results in a `<link rel="prefetch">` tag being added to the HTML. This causes the browser to prefetch all dynamic imports, delaying the rendering of the main content. Even if the application feels fast, the LCP score can be negatively affected by the prefetching of dynamic imports and image assets. This module addresses this issue by removing prefetchable dependencies from the build manifest.
 
 The module supports two prefetch strategies that hook into the Nuxt build process to optimize the LCP score: `none` and `exceptImages`.
 

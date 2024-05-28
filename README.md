@@ -13,7 +13,7 @@ Large Nuxt applications with dynamic imports and image assets can suffer from po
 The module supports two prefetch strategies that hook into the Nuxt build process to optimize the LCP score: `none` and `prefetchStrategy`.
 
 - `none`: Disables prefetching for all dynamic imports. As a result, all `<link rel="prefetch">` tags are removed from the HTML.
-- `prefetchStrategy`: Filter image assets from the build manifest. This prevents the browser from prefetching images, which can delay the rendering of the main content. Script and style assets will not be affected. You can define a custom list of image extensions to filter in the [module options](#module-options).
+- `excludeImages`: Filter image assets from the build manifest. This prevents the browser from prefetching images, which can delay the rendering of the main content. Script and style assets will not be affected. You can define a custom list of image extensions to filter in the [module options](#module-options).
 
 ## Setup
 

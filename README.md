@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/nuxt-lcp-speedup)](https://www.npmjs.com/package/nuxt-lcp-speedup)
 
-[Nuxt](https://nuxt.com) module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
+A [Nuxt](https://nuxt.com) _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
 
 ## Why?
 

@@ -1,8 +1,6 @@
-![Nuxt LCP Speedup](./.github/og.jpg)
+![Nuxt LCP Speedup module](./.github/og.jpg)
 
 # Nuxt LCP Speedup
-
-[![npm version](https://img.shields.io/npm/v/nuxt-lcp-speedup)](https://www.npmjs.com/package/nuxt-lcp-speedup)
 
 A [Nuxt](https://nuxt.com) _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
 

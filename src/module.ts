@@ -50,7 +50,7 @@ export default defineNuxtModule<ModuleOptions>({
         else if (options.prefetchStrategy === 'excludeImages') {
           if (file.assets) {
             file.assets = file.assets.filter(
-              asset => options.imageExtensions.every(ext => !asset.endsWith(`.${ext}`)),
+              asset => options.imageExtensions!.every(ext => !asset.endsWith(`.${ext}`)),
             )
           }
         }

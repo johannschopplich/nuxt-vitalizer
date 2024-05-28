@@ -2,18 +2,20 @@
 
 # Nuxt LCP Speedup
 
-A [Nuxt](https://nuxt.com) _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights. This may improve your SEO visibility.
+A [Nuxt](https://nuxt.com) workaround as a _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
 
 ## Why?
 
-Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights. Each dynamic import results in a `<link rel="prefetch">` tag being added to the HTML. This causes the browser to prefetch all dynamic imports, delaying the rendering of the main content. Even if the application feels fast, the LCP score can be negatively affected by the prefetching of dynamic imports and image assets. This module addresses this issue by removing prefetchable dependencies from the build manifest.
+Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights due to `<link rel="prefetch">` tags accumulating in the HTML. This module removes prefetchable chunks from the build manifest to improve the LCP score.
+
+For each dynamic import, such as asynchronous components and other assets such as images, a `<link rel="prefetch">` is rendered by Nuxt. This causes the browser to prefetch these chunks, even if they are not needed on the current page. While this is great for the overall performance of the application, it can lead to a high number of prefetch requests, which negatively affects the Largest Contentful Paint score.
 
 ![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
 
-The module supports two prefetch strategies that hook into the Nuxt build process to optimize the LCP score: `none` and `exceptImages`.
+This module is a workaround that hooks into the Nuxt build process to optimize the LCP score by:
 
-- `none`: Disables prefetching for all dynamic imports. As a result, no `<link rel="prefetch">` tags for build assets will be added to the HTML. This is the default behavior.
-- `exceptImages`: Filter image assets from the build manifest. This prevents the browser from prefetching images, which can delay the rendering of the main content. Script and style assets will not be affected. You can define a custom list of image extensions to filter in the [module options](#module-options).
+- Disabling rendering `prefetch` links for dynamic imports.
+- Preventing image assets (`gif`, `jpg`, `jpeg`, `png`, `svg`, and `webp`) from being prefetched. You can customize this list in the [module options](#module-options).
 
 ## Setup
 
@@ -40,8 +42,8 @@ export default defineNuxtConfig({
   modules: ['nuxt-lcp-speedup'],
 
   lcpSpeedup: {
-    //
-    prefetchLinks: 'exceptImages'
+    // Set the asset extensions that should not be prefetched
+    assetExtensions: ['webp']
   }
 })
 ```
@@ -57,17 +59,11 @@ interface ModuleOptions {
    */
   enabled?: boolean
   /**
-   * Determines which prefetch links should be rendered in the HTML.
-   *
-   * @default 'none'
-   */
-  prefetchLinks?: 'none' | 'exceptImages'
-  /**
-   * List of image extensions to remove from the manifest.
+   * List of assets extensions that should not be prefetched.
    *
    * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
    */
-  imageExtensions?: string[]
+  assetExtensions?: string[]
 }
 ```
 
@@ -81,7 +77,7 @@ interface ModuleOptions {
 
 ## Credits
 
-- All the discussions and contributions in the [Nuxt GitHub issue](https://github.com/nuxt/nuxt/issues/18376) that inspired this module.
+- All the discussions and contributions in the Nuxt GitHub [issue #14584](https://github.com/nuxt/nuxt/issues/14584) and [issue #18376](https://github.com/nuxt/nuxt/issues/18376) that inspired this module.
 
 ## License
 

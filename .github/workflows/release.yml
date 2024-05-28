@@ -1,0 +1,39 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
+
+      - name: Publish changelog
+        run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install
+        run: pnpm install
+
+      - name: Build type stubs
+        run: pnpm run dev:prepare
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

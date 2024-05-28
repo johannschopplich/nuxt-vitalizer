@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Nuxt LCP Speedup Documentation
+    url: https://github.com/johannschopplich/nuxt-lcp-speedup
+    about: Check the documentation for usage of Nuxt LCP Speedup

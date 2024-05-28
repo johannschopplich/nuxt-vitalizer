@@ -2,7 +2,7 @@
 
 # Nuxt LCP Speedup
 
-[![npm version](https://img.shields.io/npm/v/nuxt-lcp-speedup?color=a1b858&label=)](https://www.npmjs.com/package/nuxt-lcp-speedup)
+[![npm version](https://img.shields.io/npm/v/nuxt-lcp-speedup?label=)](https://www.npmjs.com/package/nuxt-lcp-speedup)
 
 [Nuxt](https://nuxt.com) module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
 

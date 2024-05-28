@@ -8,11 +8,11 @@ export interface ModuleOptions {
    */
   enabled?: boolean
   /**
-   * Determines which assets to remove from the manifest.
+   * Determines which prefetch links should be rendered in the HTML.
    *
    * @default 'none'
    */
-  prefetchStrategy?: 'none' | 'exceptImages'
+  prefetchLinks?: 'none' | 'exceptImages'
   /**
    * List of image extensions to remove from the manifest.
    *
@@ -28,7 +28,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     enabled: true,
-    prefetchStrategy: 'none',
+    prefetchLinks: 'none',
     imageExtensions: ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp'],
   },
   async setup(options, nuxt) {
@@ -43,11 +43,11 @@ export default defineNuxtModule<ModuleOptions>({
       for (const key in manifest) {
         const file = manifest[key]
 
-        if (options.prefetchStrategy === 'none') {
-          // Remove all prefetch links, since they impact LCP negatively
+        if (options.prefetchLinks === 'none') {
+          // Remove all prefetch links from the manifest
           file.dynamicImports = []
         }
-        else if (options.prefetchStrategy === 'exceptImages') {
+        else if (options.prefetchLinks === 'exceptImages') {
           if (file.assets) {
             file.assets = file.assets.filter(
               asset => options.imageExtensions!.every(ext => !asset.endsWith(`.${ext}`)),

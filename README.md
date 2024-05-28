@@ -12,7 +12,7 @@ Large Nuxt applications can suffer from poor performance scores in Lighthouse an
 
 The module supports two prefetch strategies that hook into the Nuxt build process to optimize the LCP score: `none` and `exceptImages`.
 
-- `none`: Disables prefetching for all dynamic imports. As a result, all `<link rel="prefetch">` tags are removed from the HTML.
+- `none`: Disables prefetching for all dynamic imports. As a result, no `<link rel="prefetch">` tags for build assets will be added to the HTML. This is the default behavior.
 - `exceptImages`: Filter image assets from the build manifest. This prevents the browser from prefetching images, which can delay the rendering of the main content. Script and style assets will not be affected. You can define a custom list of image extensions to filter in the [module options](#module-options).
 
 ## Setup
@@ -40,7 +40,8 @@ export default defineNuxtConfig({
   modules: ['nuxt-lcp-speedup'],
 
   lcpSpeedup: {
-    prefetchStrategy: 'exceptImages'
+    //
+    prefetchLinks: 'exceptImages'
   }
 })
 ```
@@ -56,11 +57,11 @@ interface ModuleOptions {
    */
   enabled?: boolean
   /**
-   * Determines which assets to remove from the manifest.
+   * Determines which prefetch links should be rendered in the HTML.
    *
    * @default 'none'
    */
-  prefetchStrategy?: 'none' | 'exceptImages'
+  prefetchLinks?: 'none' | 'exceptImages'
   /**
    * List of image extensions to remove from the manifest.
    *

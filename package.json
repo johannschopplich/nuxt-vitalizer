@@ -46,7 +46,9 @@
     "release": "bumpp"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.11.2"
+    "@nuxt/kit": "^3.11.2",
+    "defu": "^6.1.4",
+    "knitwork": "^1.1.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.13",

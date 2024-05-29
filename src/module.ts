@@ -98,7 +98,7 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
 
       nuxt.hook('build:manifest', (manifest) => {
         for (const file of Object.values(manifest)) {
-        // Remove all prefetch links from the manifest
+          // Remove all prefetch links from the manifest
           file.dynamicImports = []
 
           // Remove all prefetch assets from the manifest

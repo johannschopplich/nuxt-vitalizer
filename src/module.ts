@@ -15,6 +15,9 @@ export interface ModuleOptions {
    * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
    */
   assetExtensions?: string[]
+  /**
+   * Options for the `DelayHydration` component.
+   */
   delayHydration?: {
     /**
      * Specify the events that should trigger hydration.

@@ -25,29 +25,36 @@ export default defineComponent({
     const isIdle = ref(false)
     let vnode: VNode | undefined
 
-    if (import.meta.client && nuxtApp.isHydrating && instance.vnode.el) {
-      const fragment = getFragmentHTML(instance.vnode.el, false)
-      if (fragment) {
-        vnode = createStaticVNode(fragment.join(''), fragment.length)
+    if (import.meta.client) {
+      if (nuxtApp.isHydrating) {
+        if (instance.vnode.el) {
+          const fragment = getFragmentHTML(instance.vnode.el, false)
+          if (fragment) {
+            vnode = createStaticVNode(fragment.join(''), fragment.length)
+          }
+        }
+
+        onMounted(async () => {
+          if (!('requestIdleCallback' in window)) {
+            isIdle.value = true
+            return
+          }
+
+          const triggers = [idleListener(), eventListeners()]
+          nuxtApp._delayHydrationPromise ??= Promise.race(
+            triggers.map(t => t.promise),
+          ).finally(() => {
+            for (const t of triggers) t.cleanup()
+          })
+
+          await nuxtApp._delayHydrationPromise
+          isIdle.value = true
+        })
+      }
+      else {
+        isIdle.value = true
       }
     }
-
-    onMounted(async () => {
-      if (!('requestIdleCallback' in window)) {
-        isIdle.value = true
-        return
-      }
-
-      const triggers = [idleListener(), eventListeners()]
-      nuxtApp._delayHydrationPromise ??= Promise.race(
-        triggers.map(t => t.promise),
-      ).finally(() => {
-        for (const t of triggers) t.cleanup()
-      })
-
-      await nuxtApp._delayHydrationPromise
-      isIdle.value = true
-    })
 
     return () => (isIdle.value ? slots.default!() : vnode)
   },
@@ -56,12 +63,13 @@ export default defineComponent({
 function eventListeners(): Handler {
   const abortController = new AbortController()
   const promise = new Promise<Event>((resolve) => {
-    const handler = (e: Event) => {
-      for (const e of delayHydrationOptions.hydrateOnEvents) window.removeEventListener(e, handler)
+    const listener = (e: Event) => {
+      for (const e of delayHydrationOptions.hydrateOnEvents) window.removeEventListener(e, listener)
       requestAnimationFrame(() => resolve(e))
     }
+
     for (const e of delayHydrationOptions.hydrateOnEvents) {
-      window.addEventListener(e, handler, {
+      window.addEventListener(e, listener, {
         capture: true,
         once: true,
         passive: true,
@@ -77,17 +85,21 @@ function eventListeners(): Handler {
 }
 
 function idleListener(): Handler {
-  let id: number
+  let idleId: number
+
   const promise = new Promise<void>((resolve) => {
-    const timeoutDelay = () =>
-      setTimeout(() => requestAnimationFrame(() => resolve()), delayHydrationOptions.postIdleTimeout)
-    id = requestIdleCallback(timeoutDelay, {
+    const timeoutDelay = () => {
+      setTimeout(() => {
+        requestAnimationFrame(() => resolve())
+      }, delayHydrationOptions.postIdleTimeout)
+    }
+    idleId = requestIdleCallback(timeoutDelay, {
       timeout: delayHydrationOptions.idleCallbackTimeout,
     })
   })
 
   return {
     promise,
-    cleanup: () => cancelIdleCallback(id),
+    cleanup: () => cancelIdleCallback(idleId),
   }
 }

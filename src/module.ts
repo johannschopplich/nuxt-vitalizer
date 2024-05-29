@@ -1,6 +1,7 @@
 import { addComponent, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
 import { genImport } from 'knitwork'
 import { defu } from 'defu'
+import { name } from '../package.json'
 
 export interface ModuleOptions {
   /**
@@ -42,7 +43,7 @@ export interface ModuleOptions {
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'nuxt-lcp-speedup',
+    name,
     configKey: 'lcpSpeedup',
   },
   defaults: {
@@ -51,9 +52,8 @@ export default defineNuxtModule<ModuleOptions>({
     delayHydration: {},
   },
   async setup(options, nuxt) {
-    const moduleName = 'nuxt-lcp-speedup'
     const { resolve } = createResolver(import.meta.url)
-    const logger = useLogger('nuxt-lcp-speedup')
+    const logger = useLogger(name)
 
     // Merge default options
     options = defu(options, {
@@ -75,7 +75,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Pass options to runtime
     addTemplate({
-      filename: `module/${moduleName}.mjs`,
+      filename: `module/${name}.mjs`,
       getContents() {
         return `
 export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, undefined, 2)}
@@ -84,7 +84,7 @@ export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, un
     })
 
     addTemplate({
-      filename: `module/${moduleName}.d.ts`,
+      filename: `module/${name}.d.ts`,
       getContents() {
         return `
 ${genImport(resolve('module'), ['ModuleOptions'])}

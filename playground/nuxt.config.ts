@@ -1,3 +1,5 @@
+import NuxtLCPSpeedup from '../src/module'
+
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup'],
+  modules: [NuxtLCPSpeedup],
 })

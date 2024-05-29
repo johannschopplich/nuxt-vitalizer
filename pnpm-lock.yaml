@@ -43,11 +43,7 @@ importers:
         specifier: ^2.0.19
         version: 2.0.19(typescript@5.4.5)
 
-  playground:
-    dependencies:
-      nuxt-lcp-speedup:
-        specifier: 'workspace:'
-        version: link:..
+  playground: {}
 
 packages:
 

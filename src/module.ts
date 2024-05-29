@@ -75,7 +75,7 @@ export default defineNuxtModule<ModuleOptions>({
       filename: `module/${moduleName}.mjs`,
       getContents() {
         return `
-export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, undefined, 2)};
+export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, undefined, 2)}
 `.trimStart()
       },
     })
@@ -85,7 +85,7 @@ export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, un
       getContents() {
         return `
 ${genImport(resolve('module'), ['ModuleOptions'])}
-export declare const delayHydrationOptions: Required<Required<ModuleOptions>['delayHydration']>;
+export declare const delayHydrationOptions: Required<Required<ModuleOptions>['delayHydration']>
 `.trimStart()
       },
     })

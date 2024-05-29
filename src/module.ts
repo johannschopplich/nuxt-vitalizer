@@ -5,17 +5,19 @@ import { name } from '../package.json'
 
 export interface ModuleOptions {
   /**
-   * Enable or disable the module.
+   * Whether to disable prefetching of dynamic imports and image assets to optimize the LCP score.
    *
    * @default true
    */
-  enabled?: boolean
+  disablePrefetching?: boolean
+
   /**
    * List of assets extensions that should not be prefetched.
    *
    * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
    */
   assetExtensions?: string[]
+
   /**
    * Options for the `DelayHydration` component.
    */
@@ -47,13 +49,14 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'lcpSpeedup',
   },
   defaults: {
-    enabled: true,
+    disablePrefetching: true,
     assetExtensions: ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp'],
     delayHydration: {},
   },
   async setup(options, nuxt) {
-    const { resolve } = createResolver(import.meta.url)
+    const moduleName = name
     const logger = useLogger(name)
+    const { resolve } = createResolver(import.meta.url)
 
     // Merge default options
     options = defu(options, {
@@ -67,15 +70,19 @@ export default defineNuxtModule<ModuleOptions>({
     // Transpile runtime
     nuxt.options.build.transpile.push(resolve('runtime'))
 
-    // Always add components
+    // Add components
     await addComponent({
       name: 'DelayHydration',
       filePath: resolve('runtime/components/DelayHydration'),
     })
+    await addComponent({
+      name: 'SkipHydration',
+      filePath: resolve('runtime/components/SkipHydration'),
+    })
 
     // Pass options to runtime
     addTemplate({
-      filename: `module/${name}.mjs`,
+      filename: `module/${moduleName}.mjs`,
       getContents() {
         return `
 export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, undefined, 2)}
@@ -84,7 +91,7 @@ export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, un
     })
 
     addTemplate({
-      filename: `module/${name}.d.ts`,
+      filename: `module/${moduleName}.d.ts`,
       getContents() {
         return `
 ${genImport(resolve('module'), ['ModuleOptions'])}
@@ -93,13 +100,8 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
       },
     })
 
-    if (!nuxt.options._prepare) {
-      if (!options.enabled) {
-        logger.info('LCP optimization is disabled')
-        return
-      }
-
-      nuxt.hook('build:manifest', (manifest) => {
+    if (!nuxt.options._prepare && options.disablePrefetching) {
+      nuxt.hooks.hook('build:manifest', (manifest) => {
         for (const file of Object.values(manifest)) {
           // Remove all prefetch links from the manifest
           file.dynamicImports = []

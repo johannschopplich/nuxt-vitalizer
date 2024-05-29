@@ -8,7 +8,8 @@ A [Nuxt](https://nuxt.com) workaround as a _do-one-thing-well_ module to optimiz
 
 - ⚙️ Zero-config setup
 - 🚀 Prevents prefetching of dynamic imports and image assets
-- 🔥 Optional `DelayHydration` component to reduce the "Blocking Time" metric
+- 🔥 `DelayHydration` component to reduce the "Blocking Time" metric
+- 💨 `SkipHydration` component keeps SSR content for the initial render
 
 ## Why?
 
@@ -54,7 +55,9 @@ export default defineNuxtConfig({
 })
 ```
 
-## Delay Hydration
+## Components
+
+### `DelayHydration`
 
 > [!WARNING]
 > Delaying hydration of components is a hack to trick Lighthouse into thinking that the page is interactive earlier than it actually is. It may not provide real-world performance improvements and should be used with caution.
@@ -63,7 +66,7 @@ Delaying hydration is a technique to hint to Lighthouse that the page is interac
 
 The `DelayHydration` component is a simple component that waits for a certain amount of time before hydrating the component. This can be useful when you have a lot of network requests happening and want to delay the hydration of a component until the network requests are finished.
 
-### Component Usage
+**Component Usage**
 
 Use the `DelayHydration` component in your Vue components:
 
@@ -78,7 +81,7 @@ Use the `DelayHydration` component in your Vue components:
 </template>
 ```
 
-### Hydration Delay Configuration
+**Configuration**
 
 You can configure the `DelayHydration` component in the `lcpSpeedup` module options:
 
@@ -101,22 +104,45 @@ export default defineNuxtConfig({
 - The `idleCallbackTimeout` option specifies the maximum amount of time to wait in milliseconds when waiting for an idle callback. This is useful when there are a lot of network requests happening.
 - The `postIdleTimeout` option specifies the time to wait in milliseconds after the idle callback before hydrating the component.
 
+### `SkipHydration`
+
+The `SkipHydration` component simply prevents the hydration of its children on the client for the initial render. In other words, the SSR content is kept as long as the component is not unmounted. This can be useful when it is not necessary to hydrate a specific component when visiting a page for the first time to save loading the component chunk.
+
+When navigating to a new page, the `SkipHydration` component will mount its children on the client and behaves like a normal Vue component.
+
+**Component Usage**
+
+Use the `SkipHydration` component in your Vue components:
+
+```vue
+<template>
+  <div>
+    <SkipHydration>
+      <!-- Ensure to lazy load the component -->
+      <LazyMyExpensiveComponent />
+    </SkipHydration>
+  </div>
+</template>
+```
+
 ## Module Options
 
 ```ts
 interface ModuleOptions {
   /**
-   * Enable or disable the module.
+   * Whether to disable prefetching of dynamic imports and image assets to optimize the LCP score.
    *
    * @default true
    */
-  enabled?: boolean
+  disablePrefetching?: boolean
+
   /**
    * List of assets extensions that should not be prefetched.
    *
    * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
    */
   assetExtensions?: string[]
+
   /**
    * Options for the `DelayHydration` component.
    */

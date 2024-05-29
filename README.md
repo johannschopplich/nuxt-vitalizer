@@ -10,12 +10,12 @@ Large Nuxt applications can suffer from poor performance scores in Lighthouse an
 
 For each dynamic import, such as asynchronous components and other assets such as images, a `<link rel="prefetch">` is rendered by Nuxt. This causes the browser to prefetch these chunks, even if they are not needed on the current page. While this is great for the overall performance of the application, it can lead to a high number of prefetch requests, which negatively affects the Largest Contentful Paint score.
 
-![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
-
 This module is a workaround that hooks into the Nuxt build process to optimize the LCP score by:
 
 - Disabling rendering `prefetch` links for dynamic imports.
 - Preventing image assets (`gif`, `jpg`, `jpeg`, `png`, `svg`, and `webp`) from being prefetched. You can customize this list in the [module options](#module-options).
+
+![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
 
 ## Setup
 

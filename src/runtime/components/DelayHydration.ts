@@ -12,26 +12,16 @@ interface Handler {
 
 export default defineComponent({
   setup(_, { slots }) {
-    if (!slots.default) {
-      return
-    }
-
-    if (import.meta.server) {
-      return () => slots.default!()
-    }
-
     const nuxtApp = useNuxtApp()
     const instance = getCurrentInstance()!
     const supportsIdleCallback = import.meta.client ? ('requestIdleCallback' in window) : false
-    const shouldRender = ref(!supportsIdleCallback || !nuxtApp.isHydrating)
+    const shouldRender = ref(import.meta.server || !supportsIdleCallback || !nuxtApp.isHydrating)
     let vnode: VNode | undefined
 
-    if (import.meta.client && nuxtApp.isHydrating) {
+    if (import.meta.client && !shouldRender.value) {
       if (instance.vnode.el) {
-        const fragment = getFragmentHTML(instance.vnode.el, false)
-        if (fragment) {
-          vnode = createStaticVNode(fragment.join(''), fragment.length)
-        }
+        const fragment = getFragmentHTML(instance.vnode.el, false) ?? []
+        vnode = createStaticVNode(fragment.join(''), fragment.length)
       }
 
       onMounted(async () => {
@@ -47,7 +37,7 @@ export default defineComponent({
       })
     }
 
-    return () => (shouldRender.value ? slots.default!() : vnode)
+    return () => (shouldRender.value ? slots.default?.() : vnode)
   },
 })
 

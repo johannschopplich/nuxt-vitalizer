@@ -2,27 +2,19 @@
 
 # Nuxt LCP Speedup
 
-A [Nuxt](https://nuxt.com) workaround as a _do-one-thing-well_ module to optimize Largest Contentful Paint (LCP) for Lighthouse and Google PageSpeed Insights.
+A collection of workarounds as a _do-one-thing-well_ [Nuxt](https://nuxt.com) module to optimize the Largest Contentful Paint (LCP) in Google Lighthouse and Google PageSpeed Insights.
+
+This module provides a solution for the following Nuxt issues (among others):
+
+- [Disable prefetch for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
+- [Optimizations for prefetching chunks](https://github.com/nuxt/nuxt/issues/14584) (#14584)
 
 ## Features
 
-- ⚙️ Zero-config setup
-- 🚀 Prevents prefetching of dynamic imports and image assets
-- 🔥 `DelayHydration` component to reduce the "Blocking Time" metric
+- 🚀 Better LCP with zero configuration
+- 🫸 Stop render-blocking CSS
+- 🔥 `DelayHydration` component to reduce the Blocking Time metric
 - 💨 `SkipHydration` component keeps SSR content for the initial render
-
-## Why?
-
-Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights due to `<link rel="prefetch">` tags accumulating in the HTML. This module removes prefetchable chunks from the build manifest to improve the LCP score.
-
-For each dynamic import, such as asynchronous components and other assets such as images, a `<link rel="prefetch">` is rendered by Nuxt. This causes the browser to prefetch these chunks, even if they are not needed on the current page. While this is great for the overall performance of the application, it can lead to a high number of prefetch requests, which negatively affects the Largest Contentful Paint score.
-
-This module is a workaround that hooks into the Nuxt build process to optimize the LCP score by:
-
-- Disabling rendering `prefetch` links for dynamic imports.
-- Preventing image assets (`gif`, `jpg`, `jpeg`, `png`, `svg`, and `webp`) from being prefetched. You can customize this list in the [module options](#module-options).
-
-![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
 
 ## Setup
 
@@ -49,8 +41,57 @@ export default defineNuxtConfig({
   modules: ['nuxt-lcp-speedup'],
 
   lcpSpeedup: {
-    // Set the asset extensions that should not be prefetched
-    assetExtensions: ['webp']
+    // Remove the render-blocking entry CSS
+    disableEntryStylesheet: true
+  }
+})
+```
+
+## LCP Optimization Features
+
+With the optimization features of this module applied, you can reach a higher Lighthouse performance score:
+
+![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
+
+### Disable Prefetch Links for Dynamic Imports
+
+> [!INFO]
+> This feature is enabled by default.
+
+Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights due to `<link rel="prefetch">` tags accumulating in the HTML.
+
+For each dynamic import, such as asynchronous components and other assets such as images, a `prefetch` link is rendered. This causes the browser to prefetch these chunks, even if they are not needed on the current page. While this is great for the overall performance of the application, it can lead to a high number of prefetch requests, which negatively affects the Largest Contentful Paint score.
+
+This module hooks into the Nuxt build process to optimize the LCP score by disabling the rendering of `prefetch` links for dynamic imports.
+
+### Stop Render-Blocking CSS
+
+> [!INFO]
+> This feature has to be enabled manually. In order to use it, you need to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
+
+> [!WARNING]
+> Due to [a bug in Nuxt](https://github.com/nuxt/nuxt/issues/26514), this feature may not work as expected in current Nuxt versions. It will be fixed in Nuxt 3.12.
+
+While the latest Nuxt versions inline styles during SSR rendering, the `entry.<hash>.css` stylesheet is still rendered in the HTML. This can lead to render-blocking CSS, which can negatively affect the Largest Contentful Paint score.
+
+CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By removing the `entry.<hash>.css` stylesheet from the HTML, the browser can render the page faster, which can improve the LCP score.
+
+First, try to import the main application styles in the `app.vue` file. They will be saved as the `entry` CSS file when Nuxt is built:
+
+```ts
+// `app.vue`
+import '~/assets/css/main.css'
+```
+
+Now, enable the `disableEntryStylesheet` option in the module configuration to remove the render-blocking stylesheet from the HTML:
+
+```ts
+// `nuxt.config.ts`
+export default defineNuxtConfig({
+  modules: ['nuxt-lcp-speedup'],
+
+  lcpSpeedup: {
+    disableEntryStylesheet: true
   }
 })
 ```
@@ -130,18 +171,24 @@ Use the `SkipHydration` component in your Vue components:
 ```ts
 interface ModuleOptions {
   /**
-   * Whether to disable prefetching of dynamic imports and image assets to optimize the LCP score.
+   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, set to `true`.
    *
-   * @default true
+   * @remarks
+   * This will prevent the browser from downloading chunks that may not be needed yet. This can be useful for improving the LCP (Largest Contentful Paint) score.
+   *
+   * @default 'dynamicImports'
    */
-  disablePrefetching?: boolean
+  disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * List of assets extensions that should not be prefetched.
+   * Whether to remove the render-blocking `entry.<hash>.css` stylesheet from the HTML. Especially useful when styles are inlined during SSR rendering.
    *
-   * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
+   * @remarks
+   * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
+   *
+   * @default false
    */
-  assetExtensions?: string[]
+  disableEntryStylesheet?: boolean
 
   /**
    * Options for the `DelayHydration` component.
@@ -179,7 +226,7 @@ interface ModuleOptions {
 
 ## Credits
 
-- All the discussions and contributions in the Nuxt GitHub [issue #14584](https://github.com/nuxt/nuxt/issues/14584) and [issue #18376](https://github.com/nuxt/nuxt/issues/18376) that inspired this module.
+- All the discussions and contributions in the Nuxt GitHub issues that inspired this module.
 - [@harlan-zw](https://github.com/harlan-zw) for his inspiring [nuxt-delay-hydration](https://github.com/harlan-zw/nuxt-delay-hydration) module.
 
 ## License

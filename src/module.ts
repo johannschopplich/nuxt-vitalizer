@@ -5,18 +5,24 @@ import { name } from '../package.json'
 
 export interface ModuleOptions {
   /**
-   * Whether to disable prefetching of dynamic imports and image assets to optimize the LCP score.
+   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, set to `true`.
    *
-   * @default true
+   * @remarks
+   * This will prevent the browser from downloading chunks that may not be needed yet. This can be useful for improving the LCP (Largest Contentful Paint) score.
+   *
+   * @default 'dynamicImports'
    */
-  disablePrefetching?: boolean
+  disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * List of assets extensions that should not be prefetched.
+   * Whether to remove the render-blocking `entry.<hash>.css` stylesheet from the HTML. Especially useful when styles are inlined during SSR rendering.
    *
-   * @default ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp']
+   * @remarks
+   * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
+   *
+   * @default false
    */
-  assetExtensions?: string[]
+  disableEntryStylesheet?: boolean
 
   /**
    * Options for the `DelayHydration` component.
@@ -49,8 +55,8 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'lcpSpeedup',
   },
   defaults: {
-    disablePrefetching: true,
-    assetExtensions: ['gif', 'jpg', 'jpeg', 'png', 'svg', 'webp'],
+    disablePrefetchLinks: 'dynamicImports',
+    disableEntryStylesheet: false,
     delayHydration: {},
   },
   async setup(options, nuxt) {
@@ -100,22 +106,29 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
       },
     })
 
-    if (!nuxt.options._prepare && options.disablePrefetching) {
-      nuxt.hooks.hook('build:manifest', (manifest) => {
-        for (const file of Object.values(manifest)) {
-          // Remove all prefetch links from the manifest
-          file.dynamicImports = []
+    if (nuxt.options._prepare || nuxt.options.dev) return
 
-          // Remove all prefetch assets from the manifest
-          if (file.assets) {
-            file.assets = file.assets.filter(
-              asset => options.assetExtensions!.every(ext => !asset.endsWith(`.${ext}`)),
-            )
+    nuxt.hooks.hook('build:manifest', (manifest) => {
+      for (const item of Object.values(manifest)) {
+        if (options.disablePrefetchLinks) {
+          item.dynamicImports = []
+        }
+
+        if (options.disablePrefetchLinks === true) {
+          item.prefetch = false
+        }
+
+        if (options.disableEntryStylesheet && nuxt.options.features.inlineStyles && item.isEntry && item.css) {
+          // Start from the end of the array and work backwards
+          for (let i = item.css.length - 1; i >= 0; i--) {
+            if (item.css[i].startsWith('entry')) {
+              item.css.splice(i, 1)
+            }
           }
         }
-      })
+      }
+    })
 
-      logger.success('Optimized LCP score')
-    }
+    logger.success('Optimized LCP score')
   },
 })

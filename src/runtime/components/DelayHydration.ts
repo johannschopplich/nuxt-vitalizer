@@ -22,36 +22,32 @@ export default defineComponent({
 
     const nuxtApp = useNuxtApp()
     const instance = getCurrentInstance()!
-    const isIdle = ref(import.meta.client ? !('requestIdleCallback' in window) : false)
+    const supportsIdleCallback = import.meta.client ? ('requestIdleCallback' in window) : false
+    const shouldRender = ref(!supportsIdleCallback || !nuxtApp.isHydrating)
     let vnode: VNode | undefined
 
-    if (import.meta.client) {
-      if (nuxtApp.isHydrating) {
-        if (instance.vnode.el) {
-          const fragment = getFragmentHTML(instance.vnode.el, false)
-          if (fragment) {
-            vnode = createStaticVNode(fragment.join(''), fragment.length)
-          }
+    if (import.meta.client && nuxtApp.isHydrating) {
+      if (instance.vnode.el) {
+        const fragment = getFragmentHTML(instance.vnode.el, false)
+        if (fragment) {
+          vnode = createStaticVNode(fragment.join(''), fragment.length)
         }
+      }
 
-        onMounted(async () => {
-          const triggers = [idleListener(), eventListeners()]
-          nuxtApp._delayHydrationPromise ??= Promise.race(
-            triggers.map(t => t.promise),
-          ).finally(() => {
-            for (const t of triggers) t.cleanup()
-          })
-
-          await nuxtApp._delayHydrationPromise
-          isIdle.value = true
+      onMounted(async () => {
+        const triggers = [idleListener(), eventListeners()]
+        nuxtApp._delayHydrationPromise ??= Promise.race(
+          triggers.map(t => t.promise),
+        ).finally(() => {
+          for (const t of triggers) t.cleanup()
         })
-      }
-      else {
-        isIdle.value = true
-      }
+
+        await nuxtApp._delayHydrationPromise
+        shouldRender.value = true
+      })
     }
 
-    return () => (isIdle.value ? slots.default!() : vnode)
+    return () => (shouldRender.value ? slots.default!() : vnode)
   },
 })
 

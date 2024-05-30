@@ -22,7 +22,7 @@ export default defineComponent({
 
     const nuxtApp = useNuxtApp()
     const instance = getCurrentInstance()!
-    const isIdle = ref(false)
+    const isIdle = ref(import.meta.client ? !('requestIdleCallback' in window) : false)
     let vnode: VNode | undefined
 
     if (import.meta.client) {
@@ -35,11 +35,6 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-          if (!('requestIdleCallback' in window)) {
-            isIdle.value = true
-            return
-          }
-
           const triggers = [idleListener(), eventListeners()]
           nuxtApp._delayHydrationPromise ??= Promise.race(
             triggers.map(t => t.promise),

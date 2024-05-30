@@ -115,7 +115,7 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
         }
       })
 
-      logger.success('LCP is optimized for speed')
+      logger.success('Optimized LCP score')
     }
   },
 })

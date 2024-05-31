@@ -182,7 +182,7 @@ Use the `SkipHydration` component in your Vue components:
 ```ts
 interface ModuleOptions {
   /**
-   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, set to `true`.
+   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, such as images, set to `true`.
    *
    * @remarks
    * This will prevent the browser from downloading chunks that may not be needed yet. This can be useful for improving the LCP (Largest Contentful Paint) score.

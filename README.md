@@ -13,7 +13,7 @@ This module provides a solution for the following Nuxt issues (among others):
 ## Features
 
 - 🚀 Better LCP with zero configuration
-- 🫸 Stop render-blocking CSS
+- 🫸 Remove render-blocking CSS
 - 🔥 `DelayHydration` component to reduce the Blocking Time metric
 - 💨 `SkipHydration` component keeps SSR content for the initial render
 
@@ -70,12 +70,19 @@ This module hooks into the Nuxt build process to optimize the LCP score by disab
 > [!INFO]
 > This feature has to be enabled manually. In order to use it, you need to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
 
+CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By using inlined styles instead of loading stylesheets, the browser can render the page faster, which can improve the LCP score.
+
 While the latest Nuxt versions inline styles during SSR rendering, the `entry.<hash>.css` stylesheet is still rendered in the HTML. This can lead to render-blocking CSS, which can negatively affect the Largest Contentful Paint score.
 
-> [!WARNING]
-> Due to [a bug in Nuxt](https://github.com/nuxt/nuxt/issues/26514), this feature may not work as expected in current Nuxt versions. It will be fixed in Nuxt 3.12.
+Why is that the case? As [explained by Nuxt core team member @danielroe](https://github.com/nuxt/nuxt/issues/21821#issuecomment-1701613422):
 
-CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By removing the `entry.<hash>.css` stylesheet from the HTML, the browser can render the page faster, which can improve the LCP score.
+> I think this is a limitation of the current inlining style implementation.
+>
+> Styles used _everywhere_ on your app could safely be removed entirely from CSS source directly. But CSS used only in one component or a page need to be located in a CSS file _as well as_ inlined.
+>
+> At the moment, vite is in charge entirely of loading CSS on the client side which means that even if we did track what CSS was already loaded, we can't stop vite from loading the CSS files which contain duplicated CSS.
+>
+> This is something I definitely want to see fixed.
 
 First, try to import the main application styles in the `app.vue` file. They will be saved as the `entry` CSS file when Nuxt is built:
 
@@ -96,6 +103,9 @@ export default defineNuxtConfig({
   }
 })
 ```
+
+> [!WARNING]
+> Due to [a bug in Nuxt](https://github.com/nuxt/nuxt/issues/26514), this feature may not work as expected in current Nuxt versions. It will be fixed in Nuxt 3.12.
 
 ## Components
 

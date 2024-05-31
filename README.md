@@ -67,7 +67,7 @@ This module hooks into the Nuxt build process to optimize the LCP score by disab
 
 ### Stop Render-Blocking CSS
 
-> [!INFO]
+> [!NOTE]
 > This feature has to be enabled manually. In order to use it, you need to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
 
 CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By using inlined styles instead of loading stylesheets, the browser can render the page faster, which can improve the LCP score.

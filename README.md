@@ -6,7 +6,7 @@ A collection of workarounds as a _do-one-thing-well_ [Nuxt](https://nuxt.com) mo
 
 This module provides a solution for the following Nuxt issues (among others):
 
-- [Disable prefetch for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
+- [Disable `prefetch` for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
 - [Optimizations for prefetching chunks](https://github.com/nuxt/nuxt/issues/14584) (#14584)
 - [`inlineStyles` option causes duplication of CSS](https://github.com/nuxt/nuxt/issues/21821) (#21821)
 

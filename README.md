@@ -8,6 +8,7 @@ This module provides a solution for the following Nuxt issues (among others):
 
 - [Disable prefetch for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
 - [Optimizations for prefetching chunks](https://github.com/nuxt/nuxt/issues/14584) (#14584)
+- [`inlineStyles` option causes duplication of CSS](https://github.com/nuxt/nuxt/issues/21821) (#21821)
 
 ## Features
 
@@ -69,10 +70,10 @@ This module hooks into the Nuxt build process to optimize the LCP score by disab
 > [!INFO]
 > This feature has to be enabled manually. In order to use it, you need to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
 
+While the latest Nuxt versions inline styles during SSR rendering, the `entry.<hash>.css` stylesheet is still rendered in the HTML. This can lead to render-blocking CSS, which can negatively affect the Largest Contentful Paint score.
+
 > [!WARNING]
 > Due to [a bug in Nuxt](https://github.com/nuxt/nuxt/issues/26514), this feature may not work as expected in current Nuxt versions. It will be fixed in Nuxt 3.12.
-
-While the latest Nuxt versions inline styles during SSR rendering, the `entry.<hash>.css` stylesheet is still rendered in the HTML. This can lead to render-blocking CSS, which can negatively affect the Largest Contentful Paint score.
 
 CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By removing the `entry.<hash>.css` stylesheet from the HTML, the browser can render the page faster, which can improve the LCP score.
 

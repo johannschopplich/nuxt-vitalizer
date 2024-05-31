@@ -56,7 +56,7 @@ With the optimization features of this module applied, you can reach a higher Li
 
 ### Disable Prefetch Links for Dynamic Imports
 
-> [!INFO]
+> [!NOTE]
 > This feature is enabled by default.
 
 Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights due to `<link rel="prefetch">` tags accumulating in the HTML.

@@ -1,3 +1,7 @@
+// Part of this code is forked from nuxt-delay-hydration by @harlan-zw
+// @see https://github.com/harlan-zw/nuxt-delay-hydration/blob/main/src/template/global.ts
+// @license MIT
+
 import { createStaticVNode, ref, onMounted, defineComponent, getCurrentInstance } from 'vue'
 import type { VNode } from 'vue'
 import { useNuxtApp } from '#imports'

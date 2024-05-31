@@ -118,11 +118,6 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
           item.prefetch = false
         }
 
-        if (item.resourceType === 'script') {
-          console.log(item)
-          item.css = []
-        }
-
         if (nuxt.options.features.inlineStyles) {
           if (options.disableStylesheets === 'entry' && item.isEntry && item.css) {
             // Start from the end of the array and work backwards

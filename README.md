@@ -43,7 +43,7 @@ export default defineNuxtConfig({
 
   lcpSpeedup: {
     // Remove the render-blocking entry CSS
-    disableEntryStylesheet: true
+    disableStylesheets: 'entry'
   }
 })
 ```
@@ -91,7 +91,7 @@ First, try to import the main application styles in the `app.vue` file. They wil
 import '~/assets/css/main.css'
 ```
 
-Now, enable the `disableEntryStylesheet` option in the module configuration to remove the render-blocking stylesheet from the HTML:
+Now, set the `disableStylesheets` option to `entry` to prevent the `entry.<hash>.css` stylesheet from being rendered in the HTML:
 
 ```ts
 // `nuxt.config.ts`
@@ -99,13 +99,10 @@ export default defineNuxtConfig({
   modules: ['nuxt-lcp-speedup'],
 
   lcpSpeedup: {
-    disableEntryStylesheet: true
+    disableStylesheets: 'entry'
   }
 })
 ```
-
-> [!WARNING]
-> Due to [a bug in Nuxt](https://github.com/nuxt/nuxt/issues/26514), this feature may not work as expected in current Nuxt versions. It will be fixed in Nuxt 3.12.
 
 ## Components
 
@@ -192,14 +189,14 @@ interface ModuleOptions {
   disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * Whether to remove the render-blocking `entry.<hash>.css` stylesheet from the HTML. Especially useful when styles are inlined during SSR rendering.
+   * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.
    *
    * @remarks
    * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
    *
    * @default false
    */
-  disableEntryStylesheet?: boolean
+  disableStylesheets?: boolean | 'entry'
 
   /**
    * Options for the `DelayHydration` component.

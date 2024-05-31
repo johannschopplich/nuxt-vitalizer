@@ -15,14 +15,14 @@ export interface ModuleOptions {
   disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * Whether to remove the render-blocking `entry.<hash>.css` stylesheet from the HTML. Especially useful when styles are inlined during SSR rendering.
+   * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.
    *
    * @remarks
    * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
    *
    * @default false
    */
-  disableEntryStylesheet?: boolean
+  disableStylesheets?: boolean | 'entry'
 
   /**
    * Options for the `DelayHydration` component.
@@ -56,7 +56,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     disablePrefetchLinks: 'dynamicImports',
-    disableEntryStylesheet: false,
+    disableStylesheets: false,
     delayHydration: {},
   },
   async setup(options, nuxt) {
@@ -118,12 +118,22 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
           item.prefetch = false
         }
 
-        if (options.disableEntryStylesheet && nuxt.options.features.inlineStyles && item.isEntry && item.css) {
-          // Start from the end of the array and work backwards
-          for (let i = item.css.length - 1; i >= 0; i--) {
-            if (item.css[i].startsWith('entry')) {
-              item.css.splice(i, 1)
+        if (item.resourceType === 'script') {
+          console.log(item)
+          item.css = []
+        }
+
+        if (nuxt.options.features.inlineStyles) {
+          if (options.disableStylesheets === 'entry' && item.isEntry && item.css) {
+            // Start from the end of the array and work backwards
+            for (let i = item.css.length - 1; i >= 0; i--) {
+              if (item.css[i].startsWith('entry')) {
+                item.css.splice(i, 1)
+              }
             }
+          }
+          else if (options.disableStylesheets && item.resourceType === 'script') {
+            item.css = []
           }
         }
       }

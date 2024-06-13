@@ -15,6 +15,13 @@ export interface ModuleOptions {
   disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
+   * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
+   *
+   * @default false
+   */
+  disablePreloadLinks?: boolean
+
+  /**
    * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.
    *
    * @remarks
@@ -57,6 +64,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     disablePrefetchLinks: 'dynamicImports',
     disableStylesheets: false,
+    disablePreloadLinks: false,
     delayHydration: {},
   },
   async setup(options, nuxt) {
@@ -116,6 +124,10 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
 
         if (options.disablePrefetchLinks === true) {
           item.prefetch = false
+        }
+
+        if (options.disablePreloadLinks) {
+          item.preload = false
         }
 
         if (nuxt.options.features.inlineStyles) {

@@ -65,6 +65,26 @@ For each dynamic import, such as asynchronous components and other assets such a
 
 This module hooks into the Nuxt build process to optimize the LCP score by disabling the rendering of `prefetch` links for dynamic imports.
 
+### Disable Preload Links
+
+> [!NOTE]
+> This feature has to be enabled manually.
+
+Preload links are used to preload critical resources that are needed for the current page. While they generally have their place in optimizing the performance of a website, they can also lead to a high number of requests if not used correctly. Removing preload links can help to improve the FCP (First Contentful Paint) scores, especially on slow network conditions.
+
+To remove preloading build resources, set the `disablePrefetchLinks` option to `true`:
+
+```ts
+// `nuxt.config.ts`
+export default defineNuxtConfig({
+  modules: ['nuxt-lcp-speedup'],
+
+  lcpSpeedup: {
+    disablePrefetchLinks: true
+  }
+})
+```
+
 ### Stop Render-Blocking CSS
 
 > [!NOTE]
@@ -187,6 +207,13 @@ interface ModuleOptions {
    * @default 'dynamicImports'
    */
   disablePrefetchLinks?: boolean | 'dynamicImports'
+
+  /**
+   * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
+   *
+   * @default false
+   */
+  disablePreloadLinks?: boolean
 
   /**
    * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.

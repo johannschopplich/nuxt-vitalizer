@@ -63,8 +63,8 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     disablePrefetchLinks: 'dynamicImports',
-    disableStylesheets: false,
     disablePreloadLinks: false,
+    disableStylesheets: false,
     delayHydration: {},
   },
   async setup(options, nuxt) {

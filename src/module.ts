@@ -72,6 +72,8 @@ export default defineNuxtModule<ModuleOptions>({
     const logger = useLogger(name)
     const { resolve } = createResolver(import.meta.url)
 
+    logger.info('The module `nuxt-lcp-speedup` has been renamed to `nuxt-vitalizer`. Please update your dependencies and configuration.')
+
     // Merge default options
     options = defu(options, {
       delayHydration: {

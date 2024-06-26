@@ -1,5 +1,5 @@
-import NuxtLCPSpeedup from '../src/module'
+import NuxtVitalizer from '../src/module'
 
 export default defineNuxtConfig({
-  modules: [NuxtLCPSpeedup],
+  modules: [NuxtVitalizer],
 })

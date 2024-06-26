@@ -1,17 +1,17 @@
 {
-  "name": "nuxt-lcp-speedup",
+  "name": "nuxt-vitalizer",
   "type": "module",
   "version": "0.9.1",
   "packageManager": "pnpm@9.4.0",
   "description": "Instantly better LCP scores in Google Lighthouse",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
-  "homepage": "https://github.com/johannschopplich/nuxt-lcp-speedup#readme",
+  "homepage": "https://github.com/johannschopplich/nuxt-vitalizer#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/johannschopplich/nuxt-lcp-speedup.git"
+    "url": "git+https://github.com/johannschopplich/nuxt-vitalizer.git"
   },
-  "bugs": "https://github.com/johannschopplich/nuxt-lcp-speedup/issues",
+  "bugs": "https://github.com/johannschopplich/nuxt-vitalizer/issues",
   "keywords": [
     "google",
     "lcp",

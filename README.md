@@ -1,6 +1,6 @@
-![Nuxt LCP Speedup module](./.github/og.jpg)
+![Nuxt Vitalizer module](./.github/og.jpg)
 
-# Nuxt LCP Speedup
+# Nuxt Vitalizer
 
 A collection of workarounds as a _do-one-thing-well_ [Nuxt](https://nuxt.com) module to optimize the Largest Contentful Paint (LCP) in Google Lighthouse and Google PageSpeed Insights.
 
@@ -20,28 +20,28 @@ This module provides a solution for the following Nuxt issues (among others):
 ## Setup
 
 ```bash
-npx nuxi@latest module add nuxt-lcp-speedup
+npx nuxi@latest module add nuxt-vitalizer
 ```
 
 ## Usage
 
-Add the Nuxt LCP Speedup to your Nuxt configuration and you're good to go:
+Add the Nuxt Vitalizer to your Nuxt configuration and you're good to go:
 
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup']
+  modules: ['nuxt-vitalizer']
 })
 ```
 
-To customize the module, configure the `lcpSpeedup` option in your Nuxt configuration:
+To customize the module, configure the `vitalizer` option in your Nuxt configuration:
 
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup'],
+  modules: ['nuxt-vitalizer'],
 
-  lcpSpeedup: {
+  vitalizer: {
     // Remove the render-blocking entry CSS
     disableStylesheets: 'entry'
   }
@@ -77,9 +77,9 @@ To remove preloading build resources, set the `disablePrefetchLinks` option to `
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup'],
+  modules: ['nuxt-vitalizer'],
 
-  lcpSpeedup: {
+  vitalizer: {
     disablePrefetchLinks: true
   }
 })
@@ -116,9 +116,9 @@ Now, set the `disableStylesheets` option to `entry` to prevent the `entry.<hash>
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup'],
+  modules: ['nuxt-vitalizer'],
 
-  lcpSpeedup: {
+  vitalizer: {
     disableStylesheets: 'entry'
   }
 })
@@ -152,14 +152,14 @@ Use the `DelayHydration` component in your Vue components:
 
 **Configuration**
 
-You can configure the `DelayHydration` component in the `lcpSpeedup` module options:
+You can configure the `DelayHydration` component in the `vitalizer` module options:
 
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
-  modules: ['nuxt-lcp-speedup'],
+  modules: ['nuxt-vitalizer'],
 
-  lcpSpeedup: {
+  vitalizer: {
     delayHydration: {
       hydrateOnEvents: ['mousemove', 'scroll', 'keydown', 'click', 'touchstart', 'wheel'],
       idleCallbackTimeout: 8000,

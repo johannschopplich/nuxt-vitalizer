@@ -59,7 +59,7 @@ export interface ModuleOptions {
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
-    configKey: 'lcpSpeedup',
+    configKey: 'vitalizer',
   },
   defaults: {
     disablePrefetchLinks: 'dynamicImports',
@@ -71,8 +71,6 @@ export default defineNuxtModule<ModuleOptions>({
     const moduleName = name
     const logger = useLogger(name)
     const { resolve } = createResolver(import.meta.url)
-
-    logger.info('The module `nuxt-lcp-speedup` has been renamed to `nuxt-vitalizer`. Please update your dependencies and configuration.')
 
     // Merge default options
     options = defu(options, {

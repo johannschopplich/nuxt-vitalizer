@@ -1,5 +1,5 @@
 name: 🐞 Bug report
-description: Write a report to help improve Nuxt LCP Speedup
+description: Write a report to help improve Nuxt Vitalizer
 labels: [pending triage]
 body:
   - type: markdown

@@ -3,7 +3,7 @@ import { useServerHead } from '#imports'
 import NuxtIcon from '~/assets/icon-green.svg'
 
 useServerHead({
-  title: 'Nuxt LCP Speedup',
+  title: 'Nuxt Vitalizer',
   link: [
     { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css' },
   ],
@@ -12,7 +12,7 @@ useServerHead({
 
 <template>
   <header>
-    <h1>Nuxt LCP Speedup</h1>
+    <h1>Nuxt Vitalizer</h1>
   </header>
 
   <h2>Images</h2>

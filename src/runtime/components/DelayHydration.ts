@@ -6,7 +6,7 @@ import { createStaticVNode, ref, onMounted, defineComponent, getCurrentInstance 
 import type { VNode } from 'vue'
 import { useNuxtApp } from '#imports'
 import { getFragmentHTML } from '#app/components/utils'
-import { delayHydrationOptions } from '#build/module/nuxt-lcp-speedup'
+import { delayHydrationOptions } from '#build/module/nuxt-vitalizer'
 
 interface Handler {
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type

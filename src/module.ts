@@ -146,6 +146,6 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
       }
     })
 
-    logger.success('Optimized LCP score')
+    logger.success('Optimized Web Vitals')
   },
 })

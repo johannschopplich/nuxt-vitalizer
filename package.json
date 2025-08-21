@@ -1,7 +1,7 @@
 {
   "name": "nuxt-vitalizer",
   "type": "module",
-  "version": "0.10.0",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.15.0",
   "description": "Instantly better LCP scores in Google Lighthouse",
   "author": "Johann Schopplich <hello@johannschopplich.com>",

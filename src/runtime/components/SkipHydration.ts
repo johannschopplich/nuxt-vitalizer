@@ -1,7 +1,7 @@
-import { createStaticVNode, defineComponent, getCurrentInstance } from 'vue'
 import type { VNode } from 'vue'
-import { useNuxtApp } from '#imports'
 import { getFragmentHTML } from '#app/components/utils'
+import { useNuxtApp } from '#imports'
+import { createStaticVNode, defineComponent, getCurrentInstance } from 'vue'
 
 export default defineComponent({
   setup(_, { slots }) {

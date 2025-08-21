@@ -2,14 +2,13 @@
 // @see https://github.com/harlan-zw/nuxt-delay-hydration/blob/main/src/template/global.ts
 // @license MIT
 
-import { createStaticVNode, ref, onMounted, defineComponent, getCurrentInstance } from 'vue'
 import type { VNode } from 'vue'
-import { useNuxtApp } from '#imports'
 import { getFragmentHTML } from '#app/components/utils'
 import { delayHydrationOptions } from '#build/module/nuxt-vitalizer'
+import { useNuxtApp } from '#imports'
+import { createStaticVNode, defineComponent, getCurrentInstance, onMounted, ref } from 'vue'
 
 interface Handler {
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   promise: Promise<void | Event>
   cleanup: () => void
 }

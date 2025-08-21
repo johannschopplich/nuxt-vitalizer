@@ -2,7 +2,7 @@
   "name": "nuxt-vitalizer",
   "type": "module",
   "version": "0.10.0",
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@10.15.0",
   "description": "Instantly better LCP scores in Google Lighthouse",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
@@ -25,21 +25,20 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "types": "./dist/types.d.mts",
+      "default": "./dist/module.mjs"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/module.mjs",
+  "types": "./dist/types.d.mts",
   "files": [
     "dist"
   ],
   "scripts": {
     "prepack": "nuxt-module-build build",
-    "dev": "nuxi dev playground",
-    "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev": "nuxt dev playground",
+    "dev:build": "nuxt build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
@@ -47,18 +46,18 @@
     "release": "bumpp"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.14.0",
+    "@nuxt/kit": "^4.0.3",
     "defu": "^6.1.4",
-    "knitwork": "^1.1.0"
+    "knitwork": "^1.2.0"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.6.1",
-    "@nuxt/module-builder": "^0.8.4",
-    "@types/node": "^20.17.6",
-    "bumpp": "^9.8.1",
-    "eslint": "^9.14.0",
-    "nuxt": "^3.14.0",
-    "typescript": "^5.6.3",
-    "vue-tsc": "^2.1.10"
+    "@antfu/eslint-config": "^5.2.1",
+    "@nuxt/module-builder": "^1.0.2",
+    "@types/node": "^24.3.0",
+    "bumpp": "^10.2.3",
+    "eslint": "^9.33.0",
+    "nuxt": "^4.0.3",
+    "typescript": "^5.9.2",
+    "vue-tsc": "^3.0.6"
   }
 }

@@ -1,6 +1,6 @@
 import { addComponent, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
-import { genImport } from 'knitwork'
 import { defu } from 'defu'
+import { genImport } from 'knitwork'
 import { name } from '../package.json'
 
 export interface ModuleOptions {
@@ -114,7 +114,8 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
       },
     })
 
-    if (nuxt.options._prepare || nuxt.options.dev) return
+    if (nuxt.options._prepare || nuxt.options.dev)
+      return
 
     nuxt.hooks.hook('build:manifest', (manifest) => {
       for (const item of Object.values(manifest)) {
@@ -134,7 +135,7 @@ export declare const delayHydrationOptions: Required<Required<ModuleOptions>['de
           if (options.disableStylesheets === 'entry' && item.isEntry && item.css) {
             // Start from the end of the array and work backwards
             for (let i = item.css.length - 1; i >= 0; i--) {
-              if (item.css[i].startsWith('entry')) {
+              if (item.css[i]?.startsWith('entry')) {
                 item.css.splice(i, 1)
               }
             }

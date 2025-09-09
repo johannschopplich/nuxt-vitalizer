@@ -14,8 +14,6 @@ This module provides a solution for the following Nuxt issues (among others):
 
 - 🚀 Better LCP with zero configuration
 - 🫸 Remove render-blocking CSS
-- 🔥 `DelayHydration` component to reduce the Blocking Time metric
-- 💨 `SkipHydration` component keeps SSR content for the initial render
 
 ## Setup
 
@@ -124,76 +122,6 @@ export default defineNuxtConfig({
 })
 ```
 
-## Components
-
-### `DelayHydration`
-
-> [!WARNING]
-> Delaying hydration of components is a hack to trick Lighthouse into thinking that the page is interactive earlier than it actually is. It may not provide real-world performance improvements and should be used with caution.
-
-Delaying hydration is a technique to hint to Lighthouse that the page is interactive earlier than it actually is. This can improve the "Blocking Time" metric in Lighthouse and Google PageSpeed Insights.
-
-The `DelayHydration` component is a simple component that waits for a certain amount of time before hydrating the component. This can be useful when you have a lot of network requests happening and want to delay the hydration of a component until the network requests are finished.
-
-**Component Usage**
-
-Use the `DelayHydration` component in your Vue components:
-
-```vue
-<template>
-  <div>
-    <DelayHydration>
-      <!-- Ensure to lazy load the component -->
-      <LazyMyExpensiveComponent />
-    </DelayHydration>
-  </div>
-</template>
-```
-
-**Configuration**
-
-You can configure the `DelayHydration` component in the `vitalizer` module options:
-
-```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-vitalizer'],
-
-  vitalizer: {
-    delayHydration: {
-      hydrateOnEvents: ['mousemove', 'scroll', 'keydown', 'click', 'touchstart', 'wheel'],
-      idleCallbackTimeout: 8000,
-      postIdleTimeout: 4000
-    }
-  }
-})
-```
-
-- The `hydrateOnEvents` option specifies the events that should trigger hydration. By default, the component will hydrate immediately when the user moves the mouse, scrolls, presses a key, clicks, touches the screen, or scrolls the mouse wheel.
-- The `idleCallbackTimeout` option specifies the maximum amount of time to wait in milliseconds when waiting for an idle callback. This is useful when there are a lot of network requests happening.
-- The `postIdleTimeout` option specifies the time to wait in milliseconds after the idle callback before hydrating the component.
-
-### `SkipHydration`
-
-The `SkipHydration` component simply prevents the hydration of its children on the client for the initial render. In other words, the SSR content is kept as long as the component is not unmounted. This can be useful when it is not necessary to hydrate a specific component when visiting a page for the first time to save loading the component chunk.
-
-When navigating to a new page, the `SkipHydration` component will mount its children on the client and behaves like a normal Vue component.
-
-**Component Usage**
-
-Use the `SkipHydration` component in your Vue components:
-
-```vue
-<template>
-  <div>
-    <SkipHydration>
-      <!-- Ensure to lazy load the component -->
-      <LazyMyExpensiveComponent />
-    </SkipHydration>
-  </div>
-</template>
-```
-
 ## Module Options
 
 ```ts
@@ -224,30 +152,6 @@ interface ModuleOptions {
    * @default false
    */
   disableStylesheets?: boolean | 'entry'
-
-  /**
-   * Options for the `DelayHydration` component.
-   */
-  delayHydration?: {
-    /**
-     * Specify the events that should trigger hydration.
-     *
-     * @default ['mousemove', 'scroll', 'keydown', 'click', 'touchstart', 'wheel']
-     */
-    hydrateOnEvents?: (keyof WindowEventMap)[]
-    /**
-     * The maximum amount of time to wait in milliseconds when waiting for an idle callback. This is useful when there are a lot of network requests happening.
-     *
-     * @default 8000
-     */
-    idleCallbackTimeout?: number
-    /**
-     * Time to wait in milliseconds after the idle callback before hydrating the component.
-     *
-     * @default 4000
-     */
-    postIdleTimeout?: number
-  }
 }
 ```
 
@@ -262,7 +166,6 @@ interface ModuleOptions {
 ## Credits
 
 - All the discussions and contributions in the Nuxt GitHub issues that inspired this module.
-- [@harlan-zw](https://github.com/harlan-zw) for his inspiring [nuxt-delay-hydration](https://github.com/harlan-zw/nuxt-delay-hydration) module.
 
 ## License
 

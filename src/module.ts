@@ -1,6 +1,4 @@
-import { addComponent, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
-import { defu } from 'defu'
-import { genImport } from 'knitwork'
+import { defineNuxtModule, useLogger } from '@nuxt/kit'
 import { name } from '../package.json'
 
 export interface ModuleOptions {
@@ -30,30 +28,6 @@ export interface ModuleOptions {
    * @default false
    */
   disableStylesheets?: boolean | 'entry'
-
-  /**
-   * Options for the `DelayHydration` component.
-   */
-  delayHydration?: {
-    /**
-     * Specify the events that should trigger hydration.
-     *
-     * @default ['mousemove', 'scroll', 'keydown', 'click', 'touchstart', 'wheel']
-     */
-    hydrateOnEvents?: (keyof WindowEventMap)[]
-    /**
-     * The maximum amount of time to wait in milliseconds when waiting for an idle callback. This is useful when there are a lot of network requests happening.
-     *
-     * @default 8000
-     */
-    idleCallbackTimeout?: number
-    /**
-     * Time to wait in milliseconds after the idle callback before hydrating the component.
-     *
-     * @default 4000
-     */
-    postIdleTimeout?: number
-  }
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -65,54 +39,9 @@ export default defineNuxtModule<ModuleOptions>({
     disablePrefetchLinks: 'dynamicImports',
     disablePreloadLinks: false,
     disableStylesheets: false,
-    delayHydration: {},
   },
   async setup(options, nuxt) {
-    const moduleName = name
     const logger = useLogger(name)
-    const { resolve } = createResolver(import.meta.url)
-
-    // Merge default options
-    options = defu(options, {
-      delayHydration: {
-        hydrateOnEvents: ['mousemove', 'scroll', 'keydown', 'click', 'touchstart', 'wheel'],
-        idleCallbackTimeout: 8000,
-        postIdleTimeout: 4000,
-      },
-    } satisfies ModuleOptions)
-
-    // Transpile runtime
-    nuxt.options.build.transpile.push(resolve('runtime'))
-
-    // Add components
-    await addComponent({
-      name: 'DelayHydration',
-      filePath: resolve('runtime/components/DelayHydration'),
-    })
-    await addComponent({
-      name: 'SkipHydration',
-      filePath: resolve('runtime/components/SkipHydration'),
-    })
-
-    // Pass options to runtime
-    addTemplate({
-      filename: `module/${moduleName}.mjs`,
-      getContents() {
-        return `
-export const delayHydrationOptions = ${JSON.stringify(options.delayHydration, undefined, 2)}
-`.trimStart()
-      },
-    })
-
-    addTemplate({
-      filename: `module/${moduleName}.d.ts`,
-      getContents() {
-        return `
-${genImport(resolve('module'), ['ModuleOptions'])}
-export declare const delayHydrationOptions: Required<Required<ModuleOptions>['delayHydration']>
-`.trimStart()
-      },
-    })
 
     if (nuxt.options._prepare || nuxt.options.dev)
       return

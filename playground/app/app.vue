@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useServerHead } from '#imports'
+import { useHead } from '#imports'
 import NuxtIcon from '~/assets/icon-green.svg'
 
-useServerHead({
-  title: 'Nuxt Vitalizer',
-  link: [
-    { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css' },
-  ],
-})
+if (import.meta.server) {
+  useHead({
+    title: 'Nuxt Vitalizer',
+    link: [
+      { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css' },
+    ],
+  })
+}
 </script>
 
 <template>
@@ -22,11 +24,6 @@ useServerHead({
     alt="Nuxt icon"
     class="icon"
   >
-
-  <h2>Delay Component Hydration</h2>
-  <DelayHydration>
-    <PlaygroundText />
-  </DelayHydration>
 </template>
 
 <style>

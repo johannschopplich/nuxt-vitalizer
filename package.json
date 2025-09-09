@@ -2,7 +2,7 @@
   "name": "nuxt-vitalizer",
   "type": "module",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.15.1",
   "description": "Instantly better LCP scores in Google Lighthouse",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
@@ -42,21 +42,19 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
-    "test:types": "tsc --noEmit",
+    "test:types": "tsc -b --noEmit",
     "release": "bumpp"
   },
   "dependencies": {
-    "@nuxt/kit": "^4.0.3",
-    "defu": "^6.1.4",
-    "knitwork": "^1.2.0"
+    "@nuxt/kit": "^4.1.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.2.1",
+    "@antfu/eslint-config": "^5.3.0",
     "@nuxt/module-builder": "^1.0.2",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "bumpp": "^10.2.3",
-    "eslint": "^9.33.0",
-    "nuxt": "^4.0.3",
+    "eslint": "^9.35.0",
+    "nuxt": "^4.1.1",
     "typescript": "^5.9.2",
     "vue-tsc": "^3.0.6"
   }

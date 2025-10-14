@@ -15,6 +15,9 @@ export interface ModuleOptions {
   /**
    * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
    *
+   * @remarks
+   * This will also remove `modulepreload` links, which can help reduce the number of early requests in large applications.
+   *
    * @default false
    */
   disablePreloadLinks?: boolean

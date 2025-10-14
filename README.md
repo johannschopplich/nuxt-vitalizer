@@ -8,6 +8,7 @@ This module provides a solution for the following Nuxt issues (among others):
 
 - [Disable `prefetch` for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
 - [Optimizations for prefetching chunks](https://github.com/nuxt/nuxt/issues/14584) (#14584)
+- [How to disable modulepreload/prefetch or limit the amount of requests?](https://github.com/nuxt/nuxt/issues/18600) (#18600)
 - [`inlineStyles` option causes duplication of CSS](https://github.com/nuxt/nuxt/issues/21821) (#21821)
 
 ## Features
@@ -68,9 +69,13 @@ This module hooks into the Nuxt build process to optimize the LCP score by disab
 > [!NOTE]
 > This feature has to be enabled manually.
 
-Preload links are used to preload critical resources that are needed for the current page. While they generally have their place in optimizing the performance of a website, they can also lead to a high number of requests if not used correctly. Removing preload links can help to improve the FCP (First Contentful Paint) scores, especially on slow network conditions.
+Preload links (including `modulepreload` links) are used to preload critical resources that are needed for the current page. While they generally have their place in optimizing the performance of a website, they can also lead to a high number of requests if not used correctly.
 
-To remove preloading build resources, set the `disablePrefetchLinks` option to `true`:
+In large Nuxt applications, excessive `<link rel="modulepreload">` tags for JavaScript chunks can actually harm performance by causing the browser to request many chunks that may not be needed immediately, negatively impacting the Largest Contentful Paint (LCP) score.
+
+Removing preload links can help to improve the FCP (First Contentful Paint) and LCP scores, especially on slow network conditions.
+
+To remove all preload and modulepreload links, set the `disablePreloadLinks` option to `true`:
 
 ```ts
 // `nuxt.config.ts`
@@ -78,10 +83,12 @@ export default defineNuxtConfig({
   modules: ['nuxt-vitalizer'],
 
   vitalizer: {
-    disablePrefetchLinks: true
+    disablePreloadLinks: true
   }
 })
 ```
+
+This will prevent the browser from preloading resources, allowing the browser to fetch them on-demand as they are actually needed.
 
 ### Stop Render-Blocking CSS
 
@@ -138,6 +145,9 @@ interface ModuleOptions {
 
   /**
    * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
+   *
+   * @remarks
+   * This will also remove `modulepreload` links, which can help reduce the number of early requests in large applications.
    *
    * @default false
    */

@@ -18,7 +18,7 @@ This module provides a solution for the following Nuxt issues (among others):
 ## Setup
 
 ```bash
-npx nuxi@latest module add nuxt-vitalizer
+npx nuxt module add vitalizer
 ```
 
 ## Usage

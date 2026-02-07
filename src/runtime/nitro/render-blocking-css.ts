@@ -12,8 +12,8 @@ export default defineNitroPlugin((nitroApp) => {
           if (/\sblocking\s*=/i.test(match)) {
             return match
           }
-          // Add blocking="render" before the closing >
-          return match.replace('>', ' blocking="render">')
+          // Add blocking="render" before the closing > at the end
+          return match.replace(/>$/, ' blocking="render">')
         },
       )
     }

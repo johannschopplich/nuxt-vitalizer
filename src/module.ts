@@ -1,5 +1,7 @@
-import { defineNuxtModule, useLogger } from '@nuxt/kit'
+import { createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
 import { name } from '../package.json'
+
+const { resolve } = createResolver(import.meta.url)
 
 export interface ModuleOptions {
   /**
@@ -31,6 +33,16 @@ export interface ModuleOptions {
    * @default false
    */
   disableStylesheets?: boolean | 'entry'
+
+  /**
+   * Whether to ensure CSS stylesheets are render-blocking with high priority. This can help prevent FOUC (Flash of Unstyled Content) in Nuxt 4.
+   *
+   * @remarks
+   * This adds `blocking="render"` attribute to stylesheet links to ensure they block rendering until loaded, preventing FOUC.
+   *
+   * @default true
+   */
+  enforceRenderBlockingCSS?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -42,12 +54,21 @@ export default defineNuxtModule<ModuleOptions>({
     disablePrefetchLinks: 'dynamicImports',
     disablePreloadLinks: false,
     disableStylesheets: false,
+    enforceRenderBlockingCSS: true,
   },
   async setup(options, nuxt) {
     const logger = useLogger(name)
 
     if (nuxt.options._prepare || nuxt.options.dev)
       return
+
+    // Add Nitro plugin to ensure render-blocking CSS in SSR
+    if (options.enforceRenderBlockingCSS) {
+      nuxt.hooks.hook('nitro:config', (nitroConfig) => {
+        nitroConfig.plugins = nitroConfig.plugins || []
+        nitroConfig.plugins.push(resolve('./runtime/nitro/render-blocking-css'))
+      })
+    }
 
     nuxt.hooks.hook('build:manifest', (manifest) => {
       for (const item of Object.values(manifest)) {

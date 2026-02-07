@@ -53,6 +53,28 @@ With the optimization features of this module applied, you can reach a higher Li
 
 ![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
 
+### Prevent FOUC (Flash of Unstyled Content)
+
+> [!NOTE]
+> This feature is enabled by default.
+
+In Nuxt 4, CSS loading behavior has changed, which can sometimes result in FOUC (Flash of Unstyled Content) where pages initially render unstyled before CSS is applied. This is especially noticeable on first load or hard refresh.
+
+This module automatically adds the `blocking="render"` attribute to all stylesheet `<link>` tags, ensuring that the browser blocks rendering until CSS is fully loaded. This prevents FOUC and provides a better user experience.
+
+The feature is enabled by default, but you can disable it if needed:
+
+```ts
+// `nuxt.config.ts`
+export default defineNuxtConfig({
+  modules: ['nuxt-vitalizer'],
+
+  vitalizer: {
+    enforceRenderBlockingCSS: false
+  }
+})
+```
+
 ### Disable Prefetch Links for Dynamic Imports
 
 > [!NOTE]
@@ -162,6 +184,16 @@ interface ModuleOptions {
    * @default false
    */
   disableStylesheets?: boolean | 'entry'
+
+  /**
+   * Whether to ensure CSS stylesheets are render-blocking with high priority. This can help prevent FOUC (Flash of Unstyled Content) in Nuxt 4.
+   *
+   * @remarks
+   * This adds `blocking="render"` attribute to stylesheet links to ensure they block rendering until loaded, preventing FOUC.
+   *
+   * @default true
+   */
+  enforceRenderBlockingCSS?: boolean
 }
 ```
 

@@ -1,5 +1,5 @@
 import { defineNuxtModule, useLogger } from '@nuxt/kit'
-import { name } from '../package.json'
+import { name, version } from '../package.json'
 
 export interface ModuleOptions {
   /**
@@ -36,7 +36,11 @@ export interface ModuleOptions {
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
+    version,
     configKey: 'vitalizer',
+    compatibility: {
+      nuxt: '>=4.0.0',
+    },
   },
   defaults: {
     disablePrefetchLinks: 'dynamicImports',

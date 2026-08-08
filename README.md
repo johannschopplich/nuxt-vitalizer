@@ -107,7 +107,7 @@ export default defineNuxtConfig({
 
 A link is removed only once every rule behind it comes from a Vue component style block, which is the whole of what Nuxt inlines. The module walks the client module graph for that, because a stylesheet merged out of a shared chunk carries no record of where its rules came from. Two kinds of stylesheet therefore keep their link: global CSS from `nuxt.config`, and anything reaching the page through a plain `import './styles.css'` in a `.ts` module. Nuxt inlines neither, so those links are the only copy of their rules. The option is inert while `features.inlineStyles` is off, for the same reason.
 
-One case is left uncovered. `features.inlineStyles` also takes a predicate, and a component you exclude through it keeps its styles in a link – but its rules still come from a Vue style block, so this option removes the link anyway. Check a build if you narrow the predicate.
+One case is left uncovered. `features.inlineStyles` resolves to the predicate `id => id.includes('.vue')` by default, which is the rule this option applies too. Narrow it, and a component you excluded keeps its styles in a link – but its rules still come from a Vue style block, so this option removes that link anyway. Check a build before you ship a narrowed predicate.
 
 ### Background
 

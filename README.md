@@ -2,19 +2,20 @@
 
 # Nuxt Vitalizer
 
-A collection of workarounds as a _do-one-thing-well_ [Nuxt](https://nuxt.com) module to optimize the Largest Contentful Paint (LCP) in Google Lighthouse and Google PageSpeed Insights.
+Removes the prefetch and preload links [Nuxt](https://nuxt.com) renders into your HTML, so fewer requests compete with the Largest Contentful Paint.
 
-This module provides a solution for the following Nuxt issues (among others):
+- [✨ &nbsp;Release Notes](https://github.com/johannschopplich/nuxt-vitalizer/releases)
 
-- [Disable `prefetch` for dynamic imports](https://github.com/nuxt/nuxt/issues/18376) (#18376)
-- [Optimizations for prefetching chunks](https://github.com/nuxt/nuxt/issues/14584) (#14584)
-- [How to disable modulepreload/prefetch or limit the amount of requests?](https://github.com/nuxt/nuxt/issues/18600) (#18600)
-- [`inlineStyles` option causes duplication of CSS](https://github.com/nuxt/nuxt/issues/21821) (#21821)
+> [!IMPORTANT]
+> This moves the Lighthouse score, and only sometimes the field metric. Lighthouse's Lantern simulator counts every request that finishes before the observed LCP against the critical path, prefetches included, so removing them shortens the simulation. In the field those same prefetches were making the next navigation faster. Measure with [CrUX](https://developer.chrome.com/docs/crux) before and after.
 
 ## Features
 
-- 🚀 Better LCP with zero configuration
-- 🫸 Remove render-blocking CSS
+- 🚀 Fewer render-path competitors with zero configuration
+- 🔗 [No prefetch links for dynamic imports](#disable-prefetch-links-for-dynamic-imports)
+- 🪶 [Optional removal of preload and `modulepreload` links](#disable-preload-links)
+- 🧪 Build-time only, no runtime code in your bundle
+- 🦾 SSR-ready
 
 ## Setup
 
@@ -22,148 +23,101 @@ This module provides a solution for the following Nuxt issues (among others):
 npx nuxt module add vitalizer
 ```
 
-## Usage
+## Basic Usage
 
-Add the Nuxt Vitalizer to your Nuxt configuration and you're good to go:
-
-```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-vitalizer']
-})
-```
-
-To customize the module, configure the `vitalizer` option in your Nuxt configuration:
+Add `nuxt-vitalizer` to the `modules` section of your Nuxt configuration:
 
 ```ts
 // `nuxt.config.ts`
 export default defineNuxtConfig({
   modules: ['nuxt-vitalizer'],
-
-  vitalizer: {
-    // Remove the render-blocking entry CSS
-    disableStylesheets: 'entry'
-  }
 })
 ```
 
-## LCP Optimization Features
+Done. Prefetch links for dynamic imports are gone from the next build.
 
-With the optimization features of this module applied, you can reach a higher Lighthouse performance score:
+## Configuration
 
-![Lighthouse SEO performance score when using the module](./.github/lighthouse-seo-performance.png)
+All [supported module options](#module-options) can be configured using the `vitalizer` key in your Nuxt configuration:
+
+```ts
+export default defineNuxtConfig({
+  modules: ['nuxt-vitalizer'],
+
+  vitalizer: {
+    // Also drop the preload and `modulepreload` links
+    disablePreloadLinks: true,
+  },
+})
+```
 
 ### Disable Prefetch Links for Dynamic Imports
 
 > [!NOTE]
 > This feature is enabled by default.
 
-Large Nuxt applications can suffer from poor performance scores in Lighthouse and Google PageSpeed Insights due to `<link rel="prefetch">` tags accumulating in the HTML.
+Nuxt renders a `<link rel="prefetch">` for every dynamic import the current page does not mount, such as a lazy component behind a `v-if`. Each one is a request the browser starts before it knows whether the chunk is needed.
 
-For each dynamic import, such as asynchronous components and other assets such as images, a `prefetch` link is rendered. This causes the browser to prefetch these chunks, even if they are not needed on the current page. While this is great for the overall performance of the application, it can lead to a high number of prefetch requests, which negatively affects the Largest Contentful Paint score.
+Measured on a Nuxt 4.5.2 app with 21 lazy components left unmounted on the entry route:
 
-This module hooks into the Nuxt build process to optimize the LCP score by disabling the rendering of `prefetch` links for dynamic imports.
+| Links in the initial HTML | Without the module | With the module |
+| --- | --- | --- |
+| `<link rel="prefetch">` | 22 | 0 |
+| `<link rel="modulepreload">` | 3 | 3 |
+
+Set `disablePrefetchLinks` to `true` to drop every prefetch link instead, images included:
+
+```ts
+export default defineNuxtConfig({
+  modules: ['nuxt-vitalizer'],
+
+  vitalizer: {
+    disablePrefetchLinks: true,
+  },
+})
+```
 
 ### Disable Preload Links
 
 > [!NOTE]
 > This feature has to be enabled manually.
 
-Preload links (including `modulepreload` links) are used to preload critical resources that are needed for the current page. While they generally have their place in optimizing the performance of a website, they can also lead to a high number of requests if not used correctly.
+Preload and `modulepreload` links tell the browser to fetch a chunk the current page does need. In a large application that is a burst of requests before the first paint, and the chunks at the back of the queue arrive later than they would have on demand.
 
-In large Nuxt applications, excessive `<link rel="modulepreload">` tags for JavaScript chunks can actually harm performance by causing the browser to request many chunks that may not be needed immediately, negatively impacting the Largest Contentful Paint (LCP) score.
+Measured on the same app, with the 21 components mounted:
 
-Removing preload links can help to improve the FCP (First Contentful Paint) and LCP scores, especially on slow network conditions.
-
-To remove all preload and modulepreload links, set the `disablePreloadLinks` option to `true`:
+| Links in the initial HTML | Without the option | With `disablePreloadLinks: true` |
+| --- | --- | --- |
+| `<link rel="modulepreload">` | 24 | 0 |
 
 ```ts
-// `nuxt.config.ts`
 export default defineNuxtConfig({
   modules: ['nuxt-vitalizer'],
 
   vitalizer: {
-    disablePreloadLinks: true
-  }
+    disablePreloadLinks: true,
+  },
 })
 ```
 
-This will prevent the browser from preloading resources, allowing the browser to fetch them on-demand as they are actually needed.
+Nuxt has no equivalent switch. `vite.build.modulePreload: false` reaches Vite, but only decides whether the module preload polyfill is injected — the links themselves come from Nuxt's own client manifest and stay.
 
-### Stop Render-Blocking CSS
+### Background
 
-> [!NOTE]
-> This feature has to be enabled manually. In order to use it, you need to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
+Both features are manifest edits Nuxt deliberately does not expose. The tracking issue [nuxt#14584](https://github.com/nuxt/nuxt/issues/14584) has been open since 2022, and the position there is a design decision rather than a backlog item:
 
-CSS stylesheets are render-blocking resources, which means that the browser has to download and parse the CSS before rendering the page. By using inlined styles instead of loading stylesheets, the browser can render the page faster, which can improve the LCP score.
-
-While the latest Nuxt versions inline styles during SSR rendering, the `entry.<hash>.css` stylesheet is still rendered in the HTML. This can lead to render-blocking CSS, which can negatively affect the Largest Contentful Paint score.
-
-Why is that the case? As [explained by Nuxt core team member @danielroe](https://github.com/nuxt/nuxt/issues/21821#issuecomment-1701613422):
-
-> I think this is a limitation of the current inlining style implementation.
+> Build-time and manifest based page prefetching is probably something we don't want to do in Nuxt 3 since [it] was always tricky in Nuxt 2 when number of pages increases. Only reliable way to predict next pages is runtime rendering.
 >
-> Styles used _everywhere_ on your app could safely be removed entirely from CSS source directly. But CSS used only in one component or a page need to be located in a CSS file _as well as_ inlined.
->
-> At the moment, vite is in charge entirely of loading CSS on the client side which means that even if we did track what CSS was already loaded, we can't stop vite from loading the CSS files which contain duplicated CSS.
->
-> This is something I definitely want to see fixed.
+> — [@pi0](https://github.com/nuxt/nuxt/issues/14584#issuecomment-1397360645)
 
-First, try to import the main application styles in the `app.vue` file. They will be saved as the `entry` CSS file when Nuxt is built:
-
-```ts
-// `app.vue`
-import '~/assets/css/main.css'
-```
-
-Now, set the `disableStylesheets` option to `entry` to prevent the `entry.<hash>.css` stylesheet from being rendered in the HTML:
-
-```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-vitalizer'],
-
-  vitalizer: {
-    disableStylesheets: 'entry'
-  }
-})
-```
+Nuxt does prune individual bad hints as they are found, most recently in [nuxt#35342](https://github.com/nuxt/nuxt/pull/35342), [nuxt#35691](https://github.com/nuxt/nuxt/pull/35691) and [nuxt#35812](https://github.com/nuxt/nuxt/pull/35812). This module is the blanket switch those PRs are not.
 
 ## Module Options
 
-```ts
-interface ModuleOptions {
-  /**
-   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, such as images, set to `true`.
-   *
-   * @remarks
-   * This will prevent the browser from downloading chunks that may not be needed yet. This can be useful for improving the LCP (Largest Contentful Paint) score.
-   *
-   * @default 'dynamicImports'
-   */
-  disablePrefetchLinks?: boolean | 'dynamicImports'
-
-  /**
-   * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
-   *
-   * @remarks
-   * This will also remove `modulepreload` links, which can help reduce the number of early requests in large applications.
-   *
-   * @default false
-   */
-  disablePreloadLinks?: boolean
-
-  /**
-   * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.
-   *
-   * @remarks
-   * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
-   *
-   * @default false
-   */
-  disableStylesheets?: boolean | 'entry'
-}
-```
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disablePrefetchLinks` | `boolean \| 'dynamicImports'` | `'dynamicImports'` | Whether to remove prefetch links from the HTML. `true` also drops the links for images and other assets. |
+| `disablePreloadLinks` | `boolean` | `false` | Whether to remove preload and `modulepreload` links from the HTML. |
 
 ## 💻 Development
 

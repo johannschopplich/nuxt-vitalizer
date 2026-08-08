@@ -29,8 +29,6 @@ describe('disablePreloadLinks (true)', async () => {
     expect(html).toContain('<script type="module"')
   })
 
-  // Nuxt derives the prefetch set from the preload set, so this option reaches further than its
-  // name says – even with `disablePrefetchLinks` off.
   it('drops the prefetch link of the unmounted cookie banner along with the preload set', () => {
     expect(prefetched(html, 'script')).toHaveLength(0)
   })

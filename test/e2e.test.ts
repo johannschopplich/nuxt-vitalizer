@@ -23,7 +23,6 @@ describe('default options', async () => {
     expect(prefetched(html, 'image')).toHaveLength(1)
   })
 
-  // Nuxt inlines these styles as well, so this link is the duplication `disableStylesheets` removes.
   it('serves the shared chunk styles both inlined and as a link', () => {
     expect(html).toContain('.base-card')
     expect(countLinks(html, 'stylesheet')).toBe(3)

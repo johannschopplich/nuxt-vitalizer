@@ -4,20 +4,22 @@ import { stripResourceHints } from './manifest'
 
 export interface ModuleOptions {
   /**
-   * Whether to remove prefetch links from the HTML. If set to `dynamicImports`, only dynamic imports will be removed. To disable all prefetching, such as images, set to `true`.
+   * Whether to remove prefetch links from the HTML.
    *
    * @remarks
-   * This will prevent the browser from downloading chunks that may not be needed yet. This can be useful for improving the LCP (Largest Contentful Paint) score.
+   * `'dynamicImports'` drops the links Nuxt renders for dynamic imports, such as lazy components
+   * that the current page never mounts. `true` drops every prefetch link, images included.
    *
    * @default 'dynamicImports'
    */
   disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * Whether to remove preload links from the HTML. This can be useful for improving the FCP (First Contentful Paint) score, especially when emulating slow network conditions.
+   * Whether to remove preload and `modulepreload` links from the HTML.
    *
    * @remarks
-   * This will also remove `modulepreload` links, which can help reduce the number of early requests in large applications.
+   * The browser then discovers each chunk through the module graph instead of up front, which
+   * thins out the request burst before the first paint at the cost of a later start per chunk.
    *
    * @default false
    */

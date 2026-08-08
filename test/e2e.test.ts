@@ -29,7 +29,6 @@ describe('default options', async () => {
     expect(countLinks(html, 'stylesheet')).toBe(3)
   })
 
-  // Every number the README's matrix quotes for this row, so the table cannot drift from the build.
   it('renders the link counts the README states', () => {
     expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 0, prefetchImage: 1, stylesheet: 3 })
   })

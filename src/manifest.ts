@@ -21,17 +21,10 @@ export function stripResourceHints(
     entry.preload = false
   }
 
-  if (isInlineStylesEnabled) {
-    if (options.disableStylesheets === 'entry' && entry.isEntry && entry.css) {
-      // Start from the end of the array and work backwards
-      for (let i = entry.css.length - 1; i >= 0; i--) {
-        if (entry.css[i]?.startsWith('entry')) {
-          entry.css.splice(i, 1)
-        }
-      }
-    }
-    else if (options.disableStylesheets && entry.resourceType === 'script') {
-      entry.css = []
-    }
+  // Nuxt empties `css` for every chunk whose styles it inlined. A chunk shared between two parents
+  // has no `src`, so Nuxt cannot attribute its styles and leaves the array behind – even though the
+  // styles reach the page inlined as well. See https://github.com/nuxt/nuxt/issues/35255
+  if (options.disableStylesheets && isInlineStylesEnabled && entry.resourceType === 'script') {
+    entry.css = []
   }
 }

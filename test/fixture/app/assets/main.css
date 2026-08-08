@@ -1,0 +1,5 @@
+/* Nuxt only inlines styles from `.vue` files by default, so this one stays a `<link>`. */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}

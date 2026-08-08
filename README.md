@@ -38,18 +38,7 @@ Done. Prefetch links for dynamic imports are gone from the next build.
 
 ## Configuration
 
-All [supported module options](#module-options) can be configured using the `vitalizer` key in your Nuxt configuration:
-
-```ts
-export default defineNuxtConfig({
-  modules: ['nuxt-vitalizer'],
-
-  vitalizer: {
-    // Also drop the preload and `modulepreload` links
-    disablePreloadLinks: true,
-  },
-})
-```
+Set the options under the `vitalizer` key. See [Module Options](#module-options) for the full list.
 
 ### Disable Prefetch Links for Dynamic Imports
 

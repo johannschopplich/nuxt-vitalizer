@@ -7,12 +7,11 @@ Better Largest Contentful Paint scores for your [Nuxt](https://nuxt.com) app in 
 - [✨ &nbsp;Release Notes](https://github.com/johannschopplich/nuxt-vitalizer/releases)
 
 > [!IMPORTANT]
-> This moves the Lighthouse score, and only sometimes the field metric. Lighthouse's Lantern simulator counts every request that finishes before the observed LCP against the critical path, prefetches included, so removing them shortens the simulation. In the field those same prefetches were making the next navigation faster. Measure with [CrUX](https://developer.chrome.com/docs/crux) before and after.
+> This moves the Lighthouse score, and only sometimes the field metric. Lighthouse's Lantern simulator counts every request that finishes before the observed LCP against the critical path, prefetches included, so removing them shortens the simulation. In the field those same prefetches make the next navigation faster. Measure with [CrUX](https://developer.chrome.com/docs/crux) before and after.
 
 ## Features
 
-- 🚀 Fewer render-path competitors with zero configuration
-- 🔗 [No prefetch links for dynamic imports](#disable-prefetch-links-for-dynamic-imports)
+- 🔗 [No prefetch links for dynamic imports](#disable-prefetch-links-for-dynamic-imports), on by default
 - 🪶 [Optional removal of preload and `modulepreload` links](#disable-preload-links)
 - 🧪 Build-time only, no runtime code in your bundle
 - 🦾 SSR-ready
@@ -69,7 +68,7 @@ export default defineNuxtConfig({
 ### Disable Preload Links
 
 > [!NOTE]
-> This feature has to be enabled manually.
+> Disabled by default.
 
 Preload and `modulepreload` links tell the browser to fetch a chunk the current page does need. In a large application that is a burst of requests before the first paint, and the chunks at the back of the queue arrive later than they would have on demand.
 
@@ -97,9 +96,9 @@ Both features are manifest edits Nuxt deliberately does not expose. The tracking
 
 > Build-time and manifest based page prefetching is probably something we don't want to do in Nuxt 3 since [it] was always tricky in Nuxt 2 when number of pages increases. Only reliable way to predict next pages is runtime rendering.
 >
-> — [@pi0](https://github.com/nuxt/nuxt/issues/14584#issuecomment-1397360645)
+> – [@pi0](https://github.com/nuxt/nuxt/issues/14584#issuecomment-1397360645)
 
-Nuxt does prune individual bad hints as they are found, most recently in [nuxt#35342](https://github.com/nuxt/nuxt/pull/35342), [nuxt#35691](https://github.com/nuxt/nuxt/pull/35691) and [nuxt#35812](https://github.com/nuxt/nuxt/pull/35812). This module is the blanket switch those PRs are not.
+Nuxt does prune individual bad hints as they are found, most recently in [nuxt#35342](https://github.com/nuxt/nuxt/pull/35342), [nuxt#35691](https://github.com/nuxt/nuxt/pull/35691) and [nuxt#35812](https://github.com/nuxt/nuxt/pull/35812). This module is the blanket switch: it strips the hints for every manifest entry instead of one case at a time.
 
 ## Module Options
 

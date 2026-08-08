@@ -6,15 +6,14 @@ export function stripResourceHints(
   options: ModuleOptions,
   isInlineStylesEnabled: boolean,
 ): void {
-  // `vue-bundle-renderer` builds the prefetch set out of `dynamicImports` and then keeps only the
-  // resources whose `prefetch` flag is set, so the two modes need different edits.
+  // `vue-bundle-renderer` derives the prefetch set from `dynamicImports`, then keeps whatever still
+  // carries its own `prefetch` flag – which is how images survive clearing the dynamic imports.
   if (options.disablePrefetchLinks === true) {
     entry.prefetch = false
-    entry.dynamicImports = []
   }
-  else if (options.disablePrefetchLinks === 'dynamicImports') {
-    if (entry.dynamicImports?.length)
-      entry.dynamicImports = []
+
+  if (options.disablePrefetchLinks && entry.dynamicImports?.length) {
+    entry.dynamicImports = []
   }
 
   if (options.disablePreloadLinks) {

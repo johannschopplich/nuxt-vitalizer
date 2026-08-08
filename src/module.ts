@@ -58,8 +58,8 @@ export default defineNuxtModule<ModuleOptions>({
     disableStylesheets: false,
   },
   setup(options, nuxt) {
-    // `build:manifest` only fires for a real client bundle. `_prepare` is private, but it is the
-    // only signal that this run is `nuxt prepare`.
+    // Bail before the hook so that `nuxt prepare` and every dev start stay silent. `_prepare` is
+    // private, but it is the only signal that this run is `nuxt prepare`.
     if (nuxt.options._prepare || nuxt.options.dev)
       return
 
@@ -67,11 +67,13 @@ export default defineNuxtModule<ModuleOptions>({
       return
 
     nuxt.hook('build:manifest', (manifest) => {
-      for (const entry of Object.values(manifest)) {
-        stripResourceHints(entry, options, Boolean(nuxt.options.features.inlineStyles))
-      }
-    })
+      const isInlineStylesEnabled = Boolean(nuxt.options.features.inlineStyles)
 
-    useLogger(name).success('Optimized Web Vitals')
+      for (const entry of Object.values(manifest)) {
+        stripResourceHints(entry, options, isInlineStylesEnabled)
+      }
+
+      useLogger(name).success('Optimized Web Vitals')
+    })
   },
 })

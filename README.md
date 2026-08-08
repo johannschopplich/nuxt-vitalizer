@@ -105,9 +105,11 @@ export default defineNuxtConfig({
 })
 ```
 
-A link is removed only once every rule behind it comes from a Vue component style block, which is the whole of what Nuxt inlines. The module walks the client module graph for that, because a stylesheet merged out of a shared chunk carries no record of where its rules came from. Two kinds of stylesheet therefore keep their link: global CSS from `nuxt.config`, and anything reaching the page through a plain `import './styles.css'` in a `.ts` module. Nuxt inlines neither, so those links are the only copy of their rules. The option is inert while `features.inlineStyles` is off, for the same reason.
+A link is removed only once every rule behind it comes from a Vue component style block. The module walks the client module graph for that, because a stylesheet merged out of a shared chunk carries no record of where its rules came from. Two kinds of stylesheet therefore keep their link: global CSS from `nuxt.config`, and anything reaching the page through a plain `import './styles.css'` in a `.ts` module. Nuxt inlines neither, so those links are the only copy of their rules. The option is inert while `features.inlineStyles` is off, for the same reason.
 
-One case is left uncovered. `features.inlineStyles` resolves to the predicate `id => id.includes('.vue')` by default, which is the rule this option applies too. Narrow it, and a component you excluded keeps its styles in a link – but its rules still come from a Vue style block, so this option removes that link anyway. Check a build before you ship a narrowed predicate.
+That rule is deliberately narrower than Nuxt's. Nuxt inlines a `.css` file a component imports directly as well, and this module does not recognize those – so a stylesheet holding one such import keeps its link and its rules stay on the page twice. Since a stylesheet is judged as a whole, a single `import './widget.css'` in a shared component is enough to make the option a no-op for everything merged into that file.
+
+One case is left uncovered. `features.inlineStyles` resolves to `id => !!id && id.includes('.vue')` by default, which agrees with the rule above wherever it matters. Narrow it and the two part ways: a component you excluded keeps its styles in a link, but its rules still come from a Vue style block, so this option removes that link anyway. The component then server-renders unstyled until hydration pulls the stylesheet in. Check a build before you ship a narrowed predicate.
 
 ### Background
 
@@ -131,7 +133,7 @@ Nuxt does prune individual bad hints as they are found, most recently in [nuxt#3
 
 **Nuxt 4 is required.** This is support scope rather than a technical floor – the manifest has the same shape in Nuxt 3, but only Nuxt 4 is tested. Nuxt refuses to load the module on anything older and says so during the build. The last release for Nuxt 3 is v0.9.1.
 
-**`disableStylesheets` is a boolean.** It used to accept `boolean | 'entry'`, documented as removing only the `entry.<hash>.css` link. It never did: for every chunk that was not the entry, `'entry'` fell through to the same branch as `true` and cleared the whole list. Replace `disableStylesheets: 'entry'` with `disableStylesheets: true` to keep what you already had.
+**`disableStylesheets` is a boolean.** It used to accept `boolean | 'entry'`, documented as removing only the `entry.<hash>.css` link. It did that for the entry itself, and for every other chunk it fell through to the same branch as `true` and cleared the whole list. Replace `disableStylesheets: 'entry'` with `disableStylesheets: true` for the second half of that – the first half is gone, since v3 leaves the entry's links alone and the `entry.<hash>.css` link comes back.
 
 **`disableStylesheets` leaves more links standing.** v2 cleared the stylesheet list of every chunk, including the ones Nuxt had deliberately kept because it never inlined them – global CSS from `nuxt.config` among them, which reached the page through that link alone. v3 removes a link only when it can show the same rules are inlined, so expect one link back per stylesheet Nuxt never touched. If your v2 build looked right regardless, none of your CSS was in that category.
 

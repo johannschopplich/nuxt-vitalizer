@@ -37,8 +37,8 @@ export interface ModuleOptions {
    * @remarks
    * Only takes effect while `features.inlineStyles` is on, since the inlined styles are what makes
    * a link redundant. A stylesheet is removed only once every rule in it comes from a Vue component
-   * style block, which is the whole of what Nuxt inlines – so global CSS from `nuxt.config` and any
-   * stylesheet reaching the page through a plain `.css` import keep their link.
+   * style block, which is narrower than what Nuxt inlines – so global CSS from `nuxt.config`, and
+   * any stylesheet a `.css` import contributes to, keep their link.
    *
    * @default false
    */

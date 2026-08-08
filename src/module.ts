@@ -24,8 +24,8 @@ export interface ModuleOptions {
    * This is the one option here that can make Largest Contentful Paint worse – measure it.
    *
    * This also drops the prefetch links of dynamically imported chunks, because Nuxt derives the
-   * prefetch set from the preload set. Their stylesheets keep their prefetch links, which the
-   * prefetch set picks up on their own.
+   * prefetch set from the preload set. Their stylesheets keep theirs – those enter the prefetch
+   * set on a path that never consults the preload flag.
    *
    * @default false
    */

@@ -20,6 +20,7 @@ export interface ModuleOptions {
    * @remarks
    * The browser then discovers each chunk through the module graph instead of up front, which
    * thins out the request burst before the first paint at the cost of a later start per chunk.
+   * This is the one option here that can make Largest Contentful Paint worse – measure it.
    *
    * This also drops the prefetch links of dynamically imported chunks, because Nuxt derives the
    * prefetch set from the preload set. Their stylesheets keep their prefetch links.
@@ -29,14 +30,17 @@ export interface ModuleOptions {
   disablePreloadLinks?: boolean
 
   /**
-   * Whether to remove the render-blocking stylesheets from the HTML. This only makes sense if styles are inlined during SSR rendering. To only prevent the `entry.<hash>.css` stylesheet from being rendered, set to `entry`. If set to `true`, all stylesheet links will not be rendered.
+   * Whether to remove the render-blocking stylesheet links whose styles Nuxt already inlined.
    *
    * @remarks
-   * This requires to have the Nuxt `inlineStyles` feature enabled. Make sure to test your application after enabling this option.
+   * Only takes effect while `features.inlineStyles` is on, since the inlined styles are what makes
+   * a link redundant. It reaches nothing but the chunks Nuxt's own pass cannot attribute, so a
+   * stylesheet Nuxt kept because it never inlined it – global CSS from `nuxt.config`, most of
+   * all – stays where it is.
    *
    * @default false
    */
-  disableStylesheets?: boolean | 'entry'
+  disableStylesheets?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -59,7 +63,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (nuxt.options._prepare || nuxt.options.dev)
       return
 
-    if (!options.disablePrefetchLinks && !options.disablePreloadLinks)
+    if (!options.disablePrefetchLinks && !options.disablePreloadLinks && !options.disableStylesheets)
       return
 
     nuxt.hook('build:manifest', (manifest) => {

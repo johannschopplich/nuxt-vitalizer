@@ -21,17 +21,12 @@ export function stripResourceHints(
     entry.preload = false
   }
 
-  if (isInlineStylesEnabled) {
-    if (options.disableStylesheets === 'entry' && entry.isEntry && entry.css) {
-      // Start from the end of the array and work backwards
-      for (let i = entry.css.length - 1; i >= 0; i--) {
-        if (entry.css[i]?.startsWith('entry')) {
-          entry.css.splice(i, 1)
-        }
-      }
-    }
-    else if (options.disableStylesheets && entry.resourceType === 'script') {
-      entry.css = []
-    }
+  // Nuxt empties `css` for every chunk whose styles it inlined, but its pass keys on `src` – so a
+  // chunk shared between two parents, which has none, keeps an array whose styles are on the page
+  // twice. Chunks that do carry a `src` are Nuxt's to decide, and it keeps the ones it did not
+  // inline: global CSS from `nuxt.config` lives on the entry and its link is the only copy.
+  // See https://github.com/nuxt/nuxt/issues/35255
+  if (options.disableStylesheets && isInlineStylesEnabled && entry.resourceType === 'script' && !entry.src) {
+    entry.css = []
   }
 }

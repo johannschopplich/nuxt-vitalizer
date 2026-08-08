@@ -43,8 +43,7 @@ describe('disablePreloadLinks (true)', async () => {
     expect(countLinks(html, 'stylesheet')).toBe(3)
   })
 
-  // The stylesheet of a dynamically imported chunk enters the prefetch set through `dynamicDeps`,
-  // which the preload set has no say over – unlike the chunk's own script.
+  // It enters the prefetch set through `dynamicDeps`, which the preload set has no say over.
   it('keeps the prefetch link for the stylesheet of a dynamically imported chunk', async () => {
     const contact = await $fetch<string>('/contact')
 

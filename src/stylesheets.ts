@@ -10,9 +10,9 @@ const QUERY_RE = /\?.*$/
  * Nuxt inlines a component's `<style>` block, and on top of that any `.css` the component imports
  * directly. Only the first is recognized here, so a stylesheet counts as inlined once every rule in
  * it comes out of a style block that `shouldInline` admits – narrower than Nuxt, and therefore wrong
- * only in the direction of keeping a link. Rollup records no sources for a stylesheet merged out of
- * several chunks, which is exactly the shared chunk this module cares about, so they are walked here
- * instead.
+ * only in the direction of keeping a link. Rolldown records no sources for a stylesheet merged out
+ * of several chunks, which is exactly the shared chunk this module cares about, so they are walked
+ * here instead.
  *
  * @param inlined Receives the file name of every stylesheet Nuxt has a second, inlined copy of
  * @param shouldInline Nuxt's own `features.inlineStyles`, so that narrowing it narrows this too

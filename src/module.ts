@@ -21,6 +21,9 @@ export interface ModuleOptions {
    * The browser then discovers each chunk through the module graph instead of up front, which
    * thins out the request burst before the first paint at the cost of a later start per chunk.
    *
+   * This also drops the prefetch links of dynamically imported chunks, because Nuxt derives the
+   * prefetch set from the preload set. Their stylesheets keep their prefetch links.
+   *
    * @default false
    */
   disablePreloadLinks?: boolean
@@ -51,17 +54,20 @@ export default defineNuxtModule<ModuleOptions>({
     disableStylesheets: false,
   },
   setup(options, nuxt) {
-    const logger = useLogger(name)
-
+    // `build:manifest` only fires for a real client bundle. `_prepare` is private, but it is the
+    // only signal that this run is `nuxt prepare`.
     if (nuxt.options._prepare || nuxt.options.dev)
       return
 
-    nuxt.hooks.hook('build:manifest', (manifest) => {
+    if (!options.disablePrefetchLinks && !options.disablePreloadLinks)
+      return
+
+    nuxt.hook('build:manifest', (manifest) => {
       for (const entry of Object.values(manifest)) {
         stripResourceHints(entry, options, Boolean(nuxt.options.features.inlineStyles))
       }
     })
 
-    logger.success('Optimized Web Vitals')
+    useLogger(name).success('Optimized Web Vitals')
   },
 })

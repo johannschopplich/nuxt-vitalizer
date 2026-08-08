@@ -1,0 +1,4 @@
+/* Reaches the page through a dynamically imported `.ts` module, so its link is a prefetch. */
+.lazy-widget {
+  color: #00c;
+}

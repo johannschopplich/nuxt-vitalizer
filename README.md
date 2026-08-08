@@ -41,7 +41,7 @@ That is `disablePrefetchLinks: 'dynamicImports'`, the default and the one change
 
 ## What Each Option Changes
 
-Measured on the fixture in `test/fixture`: three routes, one component shared between two of them, one stylesheet imported from a plain `.ts` module, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. Every number below is asserted by the e2e suite, so no cell can drift away from the code.
+Measured on the fixture in `test/fixture`: three routes, one component shared between two of them, one stylesheet imported from a plain `.ts` module, one from a dynamically imported one, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. Every number below is asserted by the e2e suite, so no cell can drift away from the code.
 
 | `vitalizer` options | `modulepreload` | `prefetch` (script) | `prefetch` (image) | `stylesheet` |
 | --- | --- | --- | --- | --- |
@@ -109,7 +109,7 @@ A link is removed only once every rule behind it comes from a Vue component styl
 
 That rule is deliberately narrower than Nuxt's. Nuxt inlines a `.css` file a component imports directly as well, and this module does not recognize those – so a stylesheet holding one such import keeps its link and its rules stay on the page twice. Since a stylesheet is judged as a whole, a single `import './widget.css'` in a shared component is enough to make the option a no-op for everything merged into that file.
 
-One case is left uncovered. `features.inlineStyles` resolves to `id => !!id && id.includes('.vue')` by default, which agrees with the rule above wherever it matters. Narrow it and the two part ways: a component you excluded keeps its styles in a link, but its rules still come from a Vue style block, so this option removes that link anyway. The component then server-renders unstyled until hydration pulls the stylesheet in. Check a build before you ship a narrowed predicate.
+`features.inlineStyles` also takes a predicate, and narrowing it narrows this option with it: a component the predicate excludes is never inlined, so its link is the only copy of its rules and stays.
 
 ### Background
 

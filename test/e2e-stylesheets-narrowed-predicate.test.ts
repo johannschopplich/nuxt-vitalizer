@@ -15,7 +15,7 @@ describe('disableStylesheets (true) with a narrowed inline-styles predicate', as
     },
   })
 
-  it('keeps the stylesheet link of the component the predicate excludes', async () => {
+  it('keeps the stylesheet link of the excluded component', async () => {
     const html = await $fetch<string>('/')
 
     expect(headLinks(html).filter(link => link.rel === 'stylesheet')).toContainEqual(

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { prefetched } from './head-links'
+import { linkCounts, prefetched } from './head-links'
 
 describe('disablePrefetchLinks (false)', async () => {
   await setup({
@@ -20,9 +20,14 @@ describe('disablePrefetchLinks (false)', async () => {
     html = await $fetch<string>('/')
   })
 
-  // Guards the reason the module exists: Nuxt still emits these on its own. This also covers the
-  // path where every option is off and the module never registers its hook.
+  // Proves Nuxt emits these unaided, so the zeros in the other suites mean something. This is also
+  // the state in which the module registers no hook at all.
   it('renders a prefetch link for the chunk of the unmounted cookie banner', () => {
-    expect(prefetched(html, 'script').length).toBeGreaterThan(0)
+    expect(prefetched(html, 'script')).toHaveLength(2)
+  })
+
+  // Every number the README's matrix quotes for this row, so the table cannot drift from the build.
+  it('renders the link counts the README states', () => {
+    expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 2, prefetchImage: 1, stylesheet: 3 })
   })
 })

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { headLinks } from './head-links'
+import { headLinks, linkCounts } from './head-links'
 
 describe('disableStylesheets (true)', async () => {
   await setup({
@@ -43,6 +43,11 @@ describe('disableStylesheets (true)', async () => {
 
   it('removes no other stylesheet link', () => {
     expect(stylesheets(html)).toHaveLength(2)
+  })
+
+  // Every number the README's matrix quotes for this row, so the table cannot drift from the build.
+  it('renders the link counts the README states', () => {
+    expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 0, prefetchImage: 1, stylesheet: 2 })
   })
 })
 

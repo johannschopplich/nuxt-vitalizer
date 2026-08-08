@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { countLinks, prefetched } from './head-links'
+import { countLinks, linkCounts, prefetched } from './head-links'
 
 describe('default options', async () => {
   await setup({
@@ -23,13 +23,14 @@ describe('default options', async () => {
     expect(prefetched(html, 'image')).toHaveLength(1)
   })
 
-  it('keeps the modulepreload links Nuxt renders', () => {
-    expect(countLinks(html, 'modulepreload')).toBeGreaterThan(0)
+  // Nuxt inlines these styles as well, so this link is the duplication `disableStylesheets` removes.
+  it('serves the shared chunk styles both inlined and as a link', () => {
+    expect(html).toContain('.base-card')
+    expect(countLinks(html, 'stylesheet')).toBe(3)
   })
 
-  // Nuxt inlines these styles as well, so this link is the duplication `disableStylesheets` removes.
-  it('keeps the stylesheet link of the shared chunk', () => {
-    expect(countLinks(html, 'stylesheet')).toBe(3)
-    expect(html).toContain('.base-card')
+  // Every number the README's matrix quotes for this row, so the table cannot drift from the build.
+  it('renders the link counts the README states', () => {
+    expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 0, prefetchImage: 1, stylesheet: 3 })
   })
 })

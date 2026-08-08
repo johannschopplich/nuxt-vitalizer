@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { countLinks, prefetched } from './head-links'
+import { countLinks, linkCounts, prefetched } from './head-links'
 
 describe('disablePreloadLinks (true)', async () => {
   await setup({
@@ -43,5 +43,10 @@ describe('disablePreloadLinks (true)', async () => {
   // A stylesheet carries a preload flag too, but the render-blocking link is not derived from it.
   it('keeps every stylesheet link', () => {
     expect(countLinks(html, 'stylesheet')).toBe(3)
+  })
+
+  // Every number the README's matrix quotes for this row, so the table cannot drift from the build.
+  it('renders the link counts the README states', () => {
+    expect(linkCounts(html)).toEqual({ modulepreload: 0, prefetchScript: 0, prefetchImage: 1, stylesheet: 3 })
   })
 })

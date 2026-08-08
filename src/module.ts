@@ -24,7 +24,8 @@ export interface ModuleOptions {
    * This is the one option here that can make Largest Contentful Paint worse – measure it.
    *
    * This also drops the prefetch links of dynamically imported chunks, because Nuxt derives the
-   * prefetch set from the preload set.
+   * prefetch set from the preload set. Their stylesheets keep their prefetch links, which the
+   * prefetch set picks up on their own.
    *
    * @default false
    */
@@ -35,9 +36,9 @@ export interface ModuleOptions {
    *
    * @remarks
    * Only takes effect while `features.inlineStyles` is on, since the inlined styles are what makes
-   * a link redundant. It reaches nothing but the chunks Nuxt's own pass cannot attribute, so a
-   * stylesheet Nuxt kept because it never inlined it – global CSS from `nuxt.config`, most of
-   * all – stays where it is.
+   * a link redundant. A stylesheet is removed only once every rule in it comes from a Vue component
+   * style block, which is the whole of what Nuxt inlines – so global CSS from `nuxt.config` and any
+   * stylesheet reaching the page through a plain `.css` import keep their link.
    *
    * @default false
    */

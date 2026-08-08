@@ -23,6 +23,7 @@ export function collectInlinedStylesheets(
 ): Plugin {
   return {
     name: 'vitalizer:inlined-stylesheets',
+    applyToEnvironment: environment => environment.name === 'client',
     generateBundle(_options, bundle) {
       for (const chunk of Object.values(bundle)) {
         if (chunk.type !== 'chunk')

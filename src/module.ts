@@ -1,5 +1,6 @@
 import { defineNuxtModule, useLogger } from '@nuxt/kit'
 import { name, version } from '../package.json'
+import { stripResourceHints } from './manifest'
 
 export interface ModuleOptions {
   /**
@@ -47,39 +48,15 @@ export default defineNuxtModule<ModuleOptions>({
     disablePreloadLinks: false,
     disableStylesheets: false,
   },
-  async setup(options, nuxt) {
+  setup(options, nuxt) {
     const logger = useLogger(name)
 
     if (nuxt.options._prepare || nuxt.options.dev)
       return
 
     nuxt.hooks.hook('build:manifest', (manifest) => {
-      for (const item of Object.values(manifest)) {
-        if (options.disablePrefetchLinks) {
-          item.dynamicImports = []
-        }
-
-        if (options.disablePrefetchLinks === true) {
-          item.prefetch = false
-        }
-
-        if (options.disablePreloadLinks) {
-          item.preload = false
-        }
-
-        if (nuxt.options.features.inlineStyles) {
-          if (options.disableStylesheets === 'entry' && item.isEntry && item.css) {
-            // Start from the end of the array and work backwards
-            for (let i = item.css.length - 1; i >= 0; i--) {
-              if (item.css[i]?.startsWith('entry')) {
-                item.css.splice(i, 1)
-              }
-            }
-          }
-          else if (options.disableStylesheets && item.resourceType === 'script') {
-            item.css = []
-          }
-        }
+      for (const entry of Object.values(manifest)) {
+        stripResourceHints(entry, options, Boolean(nuxt.options.features.inlineStyles))
       }
     })
 

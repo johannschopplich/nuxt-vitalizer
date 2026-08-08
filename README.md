@@ -107,6 +107,8 @@ export default defineNuxtConfig({
 
 Only those unattributable chunks are touched. A stylesheet Nuxt kept on purpose stays, and the common case is global CSS from `nuxt.config` – Nuxt never inlines it, so its link is the only copy on the page. The option is inert while `features.inlineStyles` is off, for the same reason.
 
+One case is left uncovered. `features.inlineStyles` also takes a predicate, and a component you exclude through it keeps its styles in a link – if that component ends up in a shared chunk, this option removes the link anyway. Nothing in the manifest tells the two apart. Check a build if you narrow the predicate.
+
 ### Background
 
 Both features are manifest edits Nuxt deliberately does not expose. The tracking issue [nuxt#14584](https://github.com/nuxt/nuxt/issues/14584) has been open since 2022, and the position there is a design decision rather than a backlog item:
@@ -130,6 +132,8 @@ Nuxt does prune individual bad hints as they are found, most recently in [nuxt#3
 **Nuxt 4 is required.** The module reads `nuxt.options.features.inlineStyles` and targets the Nuxt 4 manifest shape. Stay on v2 for Nuxt 3.
 
 **`disableStylesheets` is a boolean.** It used to accept `boolean | 'entry'`, documented as removing only the `entry.<hash>.css` link. It never did: for every chunk that was not the entry, `'entry'` fell through to the same branch as `true` and cleared the whole list. Replace `disableStylesheets: 'entry'` with `disableStylesheets: true` to keep what you already had.
+
+**`disableStylesheets` leaves more links standing.** v2 cleared the stylesheet list of every chunk, including the ones Nuxt had deliberately kept because it never inlined them – global CSS from `nuxt.config` among them, which reached the page through that link alone. Expect one link back per stylesheet in that category. If your v2 build looked right regardless, nothing about it was global.
 
 ## 💻 Development
 

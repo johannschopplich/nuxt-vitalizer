@@ -1,9 +1,9 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { countLinks, prefetched } from './head-links'
 
-describe('disablePreloadLinks true', async () => {
+describe('disablePreloadLinks (true)', async () => {
   await setup({
     server: true,
     rootDir: join(import.meta.dirname, 'fixture'),
@@ -15,29 +15,28 @@ describe('disablePreloadLinks true', async () => {
     },
   })
 
-  it('renders no modulepreload link', async () => {
-    const html = await $fetch<string>('/')
+  let html: string
 
+  beforeAll(async () => {
+    html = await $fetch<string>('/')
+  })
+
+  it('renders no modulepreload link', () => {
     expect(countLinks(html, 'modulepreload')).toBe(0)
   })
 
-  it('still renders the entry script tag', async () => {
-    const html = await $fetch<string>('/')
-
+  it('still renders the entry script tag', () => {
     expect(html).toContain('<script type="module"')
   })
 
   // Nuxt derives the prefetch set from the preload set, so this option reaches further than its
   // name says – even with `disablePrefetchLinks` off.
-  it('drops the prefetch link of the unmounted widget along with the preload set', async () => {
-    const html = await $fetch<string>('/')
-
+  it('drops the prefetch link of the unmounted cookie banner along with the preload set', () => {
     expect(prefetched(html, 'script')).toHaveLength(0)
   })
 
-  it('keeps the prefetch link for the image, which is not a preload', async () => {
-    const html = await $fetch<string>('/')
-
+  // The image is never a preload, so nothing about it is derived from the preload set.
+  it('keeps the prefetch link for the image', () => {
     expect(prefetched(html, 'image')).toHaveLength(1)
   })
 })

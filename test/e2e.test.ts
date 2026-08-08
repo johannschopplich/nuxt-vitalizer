@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
-import { countLinks } from './head-links'
+import { countLinks, prefetched } from './head-links'
 
 describe('default options', async () => {
   await setup({
@@ -9,13 +9,19 @@ describe('default options', async () => {
     rootDir: join(import.meta.dirname, 'fixture'),
   })
 
-  it('renders no prefetch link for the unmounted widget', async () => {
+  it('renders no prefetch link for the chunk of the unmounted widget', async () => {
     const html = await $fetch<string>('/')
 
-    expect(countLinks(html, 'prefetch')).toBe(0)
+    expect(prefetched(html, 'script')).toHaveLength(0)
   })
 
-  it('renders the modulepreload links of the current page', async () => {
+  it('renders a prefetch link for the image the page imports', async () => {
+    const html = await $fetch<string>('/')
+
+    expect(prefetched(html, 'image')).toHaveLength(1)
+  })
+
+  it('keeps the modulepreload links Nuxt renders', async () => {
     const html = await $fetch<string>('/')
 
     expect(countLinks(html, 'modulepreload')).toBeGreaterThan(0)

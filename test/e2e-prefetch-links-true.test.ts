@@ -3,21 +3,21 @@ import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
 import { countLinks } from './head-links'
 
-describe('disablePrefetchLinks off', async () => {
+describe('disablePrefetchLinks true', async () => {
   await setup({
     server: true,
     rootDir: join(import.meta.dirname, 'fixture'),
     nuxtConfig: {
       vitalizer: {
-        disablePrefetchLinks: false,
+        disablePrefetchLinks: true,
       },
     },
   })
 
-  // Guards the reason the module exists: Nuxt still emits these on its own.
-  it('renders a prefetch link for the unmounted widget', async () => {
+  // The default mode leaves this one standing, which is the whole difference between the two.
+  it('renders no prefetch link for the image the page imports', async () => {
     const html = await $fetch<string>('/')
 
-    expect(countLinks(html, 'prefetch')).toBeGreaterThan(0)
+    expect(countLinks(html, 'prefetch')).toBe(0)
   })
 })

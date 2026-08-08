@@ -1,0 +1,4 @@
+/* Reaches the page through a `.ts` module, which Nuxt's inline-styles pass never touches. */
+.vendor-widget {
+  color: #f0f;
+}

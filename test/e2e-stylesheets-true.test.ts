@@ -20,19 +20,29 @@ describe('disableStylesheets (true)', async () => {
     html = await $fetch<string>('/')
   })
 
-  it('drops the stylesheet link of the shared chunk', () => {
-    expect(stylesheets(html)).not.toContain('BaseCard')
+  it('drops the stylesheet link of the shared chunk whose rules Nuxt inlined', () => {
+    expect(stylesheets(html)).not.toContainEqual(expect.stringContaining('BaseCard'))
   })
 
   // Dropping the link is only safe because the same rules reach the page inlined. Without this the
   // suite would pass on a page that lost its styles.
-  it('keeps the inlined styles of the shared chunk', () => {
+  it('keeps the inlined styles of that shared chunk', () => {
     expect(html).toContain('.base-card')
   })
 
-  it('keeps the stylesheet link of the global CSS, which Nuxt never inlined', () => {
-    expect(stylesheets(html)).toEqual([expect.stringContaining('entry')])
+  // `vendor.css` arrives through a `.ts` module, which Nuxt's inline-styles pass never touches.
+  it('keeps the stylesheet link of the shared chunk Nuxt did not inline', () => {
+    expect(stylesheets(html)).toContainEqual(expect.stringContaining('vendor-widget'))
+    expect(html).not.toContain('#f0f')
+  })
+
+  it('keeps the stylesheet link of the global CSS from `nuxt.config`', () => {
+    expect(stylesheets(html)).toContainEqual(expect.stringContaining('entry'))
     expect(html).not.toContain('font-family:system-ui')
+  })
+
+  it('removes no other stylesheet link', () => {
+    expect(stylesheets(html)).toHaveLength(2)
   })
 })
 

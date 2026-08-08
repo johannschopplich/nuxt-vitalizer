@@ -1,6 +1,7 @@
 import { defineNuxtModule, useLogger } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import { stripResourceHints } from './manifest'
+import { collectInlinedStylesheets } from './stylesheets'
 
 export interface ModuleOptions {
   /**
@@ -66,11 +67,20 @@ export default defineNuxtModule<ModuleOptions>({
     if (!options.disablePrefetchLinks && !options.disablePreloadLinks && !options.disableStylesheets)
       return
 
+    const inlinedStylesheets = new Set<string>()
+
+    if (options.disableStylesheets) {
+      nuxt.hook('vite:extendConfig', (config, { isClient }) => {
+        if (isClient)
+          config.plugins?.push(collectInlinedStylesheets(inlinedStylesheets))
+      })
+    }
+
     nuxt.hook('build:manifest', (manifest) => {
       const isInlineStylesEnabled = Boolean(nuxt.options.features.inlineStyles)
 
       for (const entry of Object.values(manifest)) {
-        stripResourceHints(entry, options, isInlineStylesEnabled)
+        stripResourceHints(entry, options, isInlineStylesEnabled, inlinedStylesheets)
       }
 
       useLogger(name).success('Optimized Web Vitals')

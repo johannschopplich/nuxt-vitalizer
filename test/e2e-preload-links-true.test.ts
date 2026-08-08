@@ -41,7 +41,7 @@ describe('disablePreloadLinks (true)', async () => {
   })
 
   // A stylesheet carries a preload flag too, but the render-blocking link is not derived from it.
-  it('keeps both stylesheet links', () => {
-    expect(countLinks(html, 'stylesheet')).toBe(2)
+  it('keeps every stylesheet link', () => {
+    expect(countLinks(html, 'stylesheet')).toBe(3)
   })
 })

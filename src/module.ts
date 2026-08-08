@@ -73,7 +73,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (options.disableStylesheets) {
       nuxt.hook('vite:extendConfig', (config, { isClient }) => {
         if (isClient)
-          config.plugins?.push(collectInlinedStylesheets(inlinedStylesheets))
+          config.plugins?.push(collectInlinedStylesheets(inlinedStylesheets, nuxt.options.features.inlineStyles))
       })
     }
 

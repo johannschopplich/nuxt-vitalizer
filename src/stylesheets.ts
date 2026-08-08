@@ -9,11 +9,18 @@ const QUERY_RE = /\?.*$/
  * @remarks
  * Nuxt inlines a component's `<style>` block, and on top of that any `.css` the component imports
  * directly. Only the first is recognized here, so a stylesheet counts as inlined once every rule in
- * it comes out of a style block – narrower than Nuxt, and therefore wrong only in the direction of
- * keeping a link. Rollup records no sources for a stylesheet merged out of several chunks, which is
- * exactly the shared chunk this module cares about, so they are walked here instead.
+ * it comes out of a style block that `shouldInline` admits – narrower than Nuxt, and therefore wrong
+ * only in the direction of keeping a link. Rollup records no sources for a stylesheet merged out of
+ * several chunks, which is exactly the shared chunk this module cares about, so they are walked here
+ * instead.
+ *
+ * @param inlined Receives the file name of every stylesheet Nuxt has a second, inlined copy of
+ * @param shouldInline Nuxt's own `features.inlineStyles`, so that narrowing it narrows this too
  */
-export function collectInlinedStylesheets(inlined: Set<string>): Plugin {
+export function collectInlinedStylesheets(
+  inlined: Set<string>,
+  shouldInline: boolean | ((id?: string) => boolean),
+): Plugin {
   return {
     name: 'vitalizer:inlined-stylesheets',
     generateBundle(_options, bundle) {
@@ -38,7 +45,11 @@ export function collectInlinedStylesheets(inlined: Set<string>): Plugin {
         }
 
         const isFromVueAlone = sources.size > 0
-          && [...sources].every(source => source.replace(QUERY_RE, '').endsWith('.vue'))
+          && [...sources].every((source) => {
+            const moduleId = source.replace(QUERY_RE, '')
+            return moduleId.endsWith('.vue')
+              && (shouldInline === true || (typeof shouldInline === 'function' && shouldInline(moduleId)))
+          })
         if (!isFromVueAlone)
           continue
 

@@ -37,21 +37,21 @@ export default defineNuxtConfig({
 })
 ```
 
-Done. Prefetch links for dynamic imports are gone from the next build.
+That is `disablePrefetchLinks: 'dynamicImports'`, the default and the one change with real reach: every `<link rel="prefetch">` Nuxt renders for a dynamic import is gone from the next build. The other two options are off until you turn them on.
 
 ## What Each Option Changes
 
-Measured on the fixture in `test/fixture`: two routes, one component shared between them, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. The e2e suite pins what each option changes, so no row can drift away from the code.
+Measured on the fixture in `test/fixture`: three routes, one component shared between two of them, one stylesheet imported from a plain `.ts` module, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. Every number below is asserted by the e2e suite, so no cell can drift away from the code.
 
 | `vitalizer` options | `modulepreload` | `prefetch` (script) | `prefetch` (image) | `stylesheet` |
 | --- | --- | --- | --- | --- |
-| *(defaults)* | 3 | 0 | 1 | 2 |
-| `disablePrefetchLinks: true` | 3 | 0 | 0 | 2 |
-| `disablePrefetchLinks: false` | 3 | 2 | 1 | 2 |
-| `disablePreloadLinks: true` | 0 | 0 | 1 | 2 |
-| `disableStylesheets: true` | 3 | 0 | 1 | 1 |
+| *(defaults)* | 4 | 0 | 1 | 3 |
+| `disablePrefetchLinks: true` | 4 | 0 | 0 | 3 |
+| `disablePrefetchLinks: false` | 4 | 2 | 1 | 3 |
+| `disablePreloadLinks: true` | 0 | 0 | 1 | 3 |
+| `disableStylesheets: true` | 4 | 0 | 1 | 2 |
 
-Row three is what Nuxt does on its own. Row four is the one to read twice: `disablePreloadLinks` also empties the script prefetches, because Nuxt derives the prefetch set from the preload set. The stylesheet that survives row five is the global one – it was never inlined, so its link is the only copy.
+Row three is what Nuxt does on its own. Row four is the one to read twice: `disablePreloadLinks` also empties the script prefetches, because Nuxt derives the prefetch set from the preload set – compare it against row three, not against the defaults, since the defaults have already dropped them. The two stylesheets that survive row five are the global one and the one imported from the `.ts` module; Nuxt inlined neither, so each link is the only copy of its rules.
 
 ### Disable Prefetch Links for Dynamic Imports
 
@@ -93,7 +93,7 @@ Nuxt has no equivalent switch. `vite.build.modulePreload: false` reaches Vite, b
 
 ### Disable Stylesheets
 
-With `features.inlineStyles` on, Nuxt inlines a component's CSS into the HTML and empties that chunk's stylesheet list. Its pass keys on the chunk's `src`, and a chunk shared between two parents has none – so Nuxt cannot attribute the styles and leaves the list standing. The result is CSS delivered twice: once inline, once as a render-blocking `<link rel="stylesheet">`. This is [nuxt#35255](https://github.com/nuxt/nuxt/issues/35255), open and reproducible on Nuxt 4.5.2.
+With `features.inlineStyles` on, Nuxt inlines a component's CSS into the HTML and empties that chunk's stylesheet list. The map it looks the sources up in is keyed by the chunk's `src`, and a chunk shared between two parents has none – so Nuxt cannot attribute the styles and leaves the list standing. The result is CSS delivered twice: once inline, once as a render-blocking `<link rel="stylesheet">`. This is [nuxt#35255](https://github.com/nuxt/nuxt/issues/35255), open and reproducible on Nuxt 4.5.2.
 
 ```ts
 export default defineNuxtConfig({
@@ -105,13 +105,13 @@ export default defineNuxtConfig({
 })
 ```
 
-Only those unattributable chunks are touched. A stylesheet Nuxt kept on purpose stays, and the common case is global CSS from `nuxt.config` – Nuxt never inlines it, so its link is the only copy on the page. The option is inert while `features.inlineStyles` is off, for the same reason.
+A link is removed only once every rule behind it comes from a Vue component style block, which is the whole of what Nuxt inlines. The module walks the client module graph for that, because a stylesheet merged out of a shared chunk carries no record of where its rules came from. Two kinds of stylesheet therefore keep their link: global CSS from `nuxt.config`, and anything reaching the page through a plain `import './styles.css'` in a `.ts` module. Nuxt inlines neither, so those links are the only copy of their rules. The option is inert while `features.inlineStyles` is off, for the same reason.
 
-One case is left uncovered. `features.inlineStyles` also takes a predicate, and a component you exclude through it keeps its styles in a link – if that component ends up in a shared chunk, this option removes the link anyway. Nothing in the manifest tells the two apart. Check a build if you narrow the predicate.
+One case is left uncovered. `features.inlineStyles` also takes a predicate, and a component you exclude through it keeps its styles in a link – but its rules still come from a Vue style block, so this option removes the link anyway. Check a build if you narrow the predicate.
 
 ### Background
 
-Both features are manifest edits Nuxt deliberately does not expose. The tracking issue [nuxt#14584](https://github.com/nuxt/nuxt/issues/14584) has been open since 2022, and the position there is a design decision rather than a backlog item:
+All three features are manifest edits Nuxt deliberately does not expose. The tracking issue [nuxt#14584](https://github.com/nuxt/nuxt/issues/14584) has been open since 2022, and the position there is a design decision rather than a backlog item:
 
 > Build-time and manifest based page prefetching is probably something we don't want to do in Nuxt 3 since [it] was always tricky in Nuxt 2 when number of pages increases. Only reliable way to predict next pages is runtime rendering.
 >
@@ -125,15 +125,15 @@ Nuxt does prune individual bad hints as they are found, most recently in [nuxt#3
 | --- | --- | --- | --- |
 | `disablePrefetchLinks` | `boolean \| 'dynamicImports'` | `'dynamicImports'` | Whether to remove prefetch links from the HTML. `'dynamicImports'` drops only the links Nuxt renders for dynamic imports; `true` drops every prefetch link, images included; `false` disables the feature. |
 | `disablePreloadLinks` | `boolean` | `false` | Whether to remove preload and `modulepreload` links from the HTML. Also drops the prefetch links of dynamically imported chunks, since Nuxt derives the prefetch set from the preload set. |
-| `disableStylesheets` | `boolean` | `false` | Whether to remove the stylesheet links whose styles Nuxt already inlined. Leaves every stylesheet Nuxt did not inline, global CSS included. Requires `features.inlineStyles`. |
+| `disableStylesheets` | `boolean` | `false` | Whether to remove the stylesheet links whose styles Nuxt already inlined. Removes a link only when every rule behind it comes from a Vue component style block, so global CSS and plain `.css` imports keep theirs. Requires `features.inlineStyles`. |
 
 ## Migrating to v3
 
-**Nuxt 4 is required.** The module reads `nuxt.options.features.inlineStyles` and targets the Nuxt 4 manifest shape. Stay on v2 for Nuxt 3.
+**Nuxt 4 is required.** This is support scope rather than a technical floor – the manifest has the same shape in Nuxt 3, but only Nuxt 4 is tested. Nuxt refuses to load the module on anything older and says so during the build. The last release for Nuxt 3 is v0.9.1.
 
 **`disableStylesheets` is a boolean.** It used to accept `boolean | 'entry'`, documented as removing only the `entry.<hash>.css` link. It never did: for every chunk that was not the entry, `'entry'` fell through to the same branch as `true` and cleared the whole list. Replace `disableStylesheets: 'entry'` with `disableStylesheets: true` to keep what you already had.
 
-**`disableStylesheets` leaves more links standing.** v2 cleared the stylesheet list of every chunk, including the ones Nuxt had deliberately kept because it never inlined them – global CSS from `nuxt.config` among them, which reached the page through that link alone. Expect one link back per stylesheet in that category. If your v2 build looked right regardless, nothing about it was global.
+**`disableStylesheets` leaves more links standing.** v2 cleared the stylesheet list of every chunk, including the ones Nuxt had deliberately kept because it never inlined them – global CSS from `nuxt.config` among them, which reached the page through that link alone. v3 removes a link only when it can show the same rules are inlined, so expect one link back per stylesheet Nuxt never touched. If your v2 build looked right regardless, none of your CSS was in that category.
 
 ## 💻 Development
 

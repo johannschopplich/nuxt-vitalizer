@@ -2,7 +2,7 @@
 
 # Nuxt Vitalizer
 
-Removes the prefetch and preload links [Nuxt](https://nuxt.com) renders into your HTML, so fewer requests compete with the Largest Contentful Paint.
+Better Largest Contentful Paint scores for your [Nuxt](https://nuxt.com) app in [Google Lighthouse](https://developer.chrome.com/docs/lighthouse).
 
 - [✨ &nbsp;Release Notes](https://github.com/johannschopplich/nuxt-vitalizer/releases)
 

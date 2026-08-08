@@ -105,8 +105,8 @@ Nuxt does prune individual bad hints as they are found, most recently in [nuxt#3
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `disablePrefetchLinks` | `boolean \| 'dynamicImports'` | `'dynamicImports'` | Whether to remove prefetch links from the HTML. `true` also drops the links for images and other assets. |
-| `disablePreloadLinks` | `boolean` | `false` | Whether to remove preload and `modulepreload` links from the HTML. |
+| `disablePrefetchLinks` | `boolean \| 'dynamicImports'` | `'dynamicImports'` | Whether to remove prefetch links from the HTML. `'dynamicImports'` drops only the links Nuxt renders for dynamic imports; `true` drops every prefetch link, images included. |
+| `disablePreloadLinks` | `boolean` | `false` | Whether to remove preload and `modulepreload` links from the HTML. Also drops the prefetch links of dynamically imported chunks, since Nuxt derives the prefetch set from the preload set. |
 
 ## 💻 Development
 

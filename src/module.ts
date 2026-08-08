@@ -34,8 +34,9 @@ export interface ModuleOptions {
    *
    * @remarks
    * Only takes effect while `features.inlineStyles` is on, since the inlined styles are what makes
-   * the links redundant. A chunk shared between two parents keeps its link either way, because
-   * Nuxt cannot attribute its styles – that is the duplication this option removes.
+   * a link redundant. It reaches nothing but the chunks Nuxt's own pass cannot attribute, so a
+   * stylesheet Nuxt kept because it never inlined it – global CSS from `nuxt.config`, most of
+   * all – stays where it is.
    *
    * @default false
    */

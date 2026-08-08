@@ -39,4 +39,9 @@ describe('disablePreloadLinks (true)', async () => {
   it('keeps the prefetch link for the image', () => {
     expect(prefetched(html, 'image')).toHaveLength(1)
   })
+
+  // A stylesheet carries a preload flag too, but the render-blocking link is not derived from it.
+  it('keeps both stylesheet links', () => {
+    expect(countLinks(html, 'stylesheet')).toBe(2)
+  })
 })

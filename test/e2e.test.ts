@@ -27,7 +27,9 @@ describe('default options', async () => {
     expect(countLinks(html, 'modulepreload')).toBeGreaterThan(0)
   })
 
+  // Nuxt inlines these styles as well, so this link is the duplication `disableStylesheets` removes.
   it('keeps the stylesheet link of the shared chunk', () => {
-    expect(countLinks(html, 'stylesheet')).toBe(1)
+    expect(countLinks(html, 'stylesheet')).toBe(2)
+    expect(html).toContain('.base-card')
   })
 })

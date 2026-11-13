@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { countLinks, linkCounts, prefetched } from './head-links'
+import { linkCounts, prefetched } from './head-links'
 
 describe('disablePreloadLinks (true)', async () => {
   await setup({
@@ -21,26 +21,8 @@ describe('disablePreloadLinks (true)', async () => {
     html = await $fetch<string>('/')
   })
 
-  it('renders no modulepreload link', () => {
-    expect(countLinks(html, 'modulepreload')).toBe(0)
-  })
-
   it('still renders the entry script tag', () => {
     expect(html).toContain('<script type="module"')
-  })
-
-  it('drops the prefetch link of the unmounted cookie banner along with the preload set', () => {
-    expect(prefetched(html, 'script')).toHaveLength(0)
-  })
-
-  // The image is never a preload, so nothing about it is derived from the preload set.
-  it('keeps the prefetch link for the image', () => {
-    expect(prefetched(html, 'image')).toHaveLength(1)
-  })
-
-  // A stylesheet carries a preload flag too, but the render-blocking link is not derived from it.
-  it('keeps every stylesheet link', () => {
-    expect(countLinks(html, 'stylesheet')).toBe(2)
   })
 
   // It enters the prefetch set through `dynamicDeps`, which the preload set has no say over.
@@ -55,6 +37,8 @@ describe('disablePreloadLinks (true)', async () => {
     expect(prefetched(contact, 'script')).toHaveLength(0)
   })
 
+  // An image carries no preload flag, and a stylesheet's render-blocking link ignores the one it
+  // carries, so neither count follows the preload set.
   it('renders the link counts the README states', () => {
     expect(linkCounts(html)).toEqual({
       modulepreload: 0,

@@ -41,17 +41,17 @@ That is `disablePrefetchLinks: 'dynamicImports'`, the default: every `<link rel=
 
 ## What Each Option Changes
 
-Measured on Nuxt 4.5.2 with the fixture in `test/fixture`: three routes, one component shared between two of them, one stylesheet imported from a plain `.ts` module, one from a dynamically imported one, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. The e2e suite asserts every number below.
+Measured on Nuxt 4.6.4 with the fixture in `test/fixture`: three routes, one component shared between two of them, one stylesheet imported from a plain `.ts` module, one from a dynamically imported one, one lazy component that stays unmounted, one image above Vite's inline limit, and a global stylesheet registered through `nuxt.config`. The e2e suite asserts every number below.
 
 | `vitalizer` options | `modulepreload` | `prefetch` (script) | `prefetch` (image) | `stylesheet` |
 | --- | --- | --- | --- | --- |
-| *(defaults)* | 4 | 0 | 1 | 3 |
-| `disablePrefetchLinks: true` | 4 | 0 | 0 | 3 |
-| `disablePrefetchLinks: false` | 4 | 2 | 1 | 3 |
-| `disablePrefetchLinks: false`, `disablePreloadLinks: true` | 0 | 0 | 1 | 3 |
+| *(defaults)* | 4 | 0 | 1 | 2 |
+| `disablePrefetchLinks: true` | 4 | 0 | 0 | 2 |
+| `disablePrefetchLinks: false` | 4 | 3 | 1 | 2 |
+| `disablePrefetchLinks: false`, `disablePreloadLinks: true` | 0 | 0 | 1 | 2 |
 | `disableStylesheets: true` | 4 | 0 | 1 | 2 |
 
-Row three is what Nuxt does on its own. Row four adds `disablePreloadLinks` to row three, and the script prefetches go with the `modulepreload` links, because Nuxt derives them from the preload set. The two stylesheets that survive row five are the global one and the one imported from the `.ts` module; Nuxt inlined neither, so each link is the only copy of its rules.
+Row three is what Nuxt does on its own. Row four adds `disablePreloadLinks` to row three, and the script prefetches go with the `modulepreload` links, because Nuxt derives them from the preload set. The two stylesheets in every row are the global one and the one imported from the `.ts` module; Nuxt inlined neither, so each link is the only copy of its rules. Row five equals the defaults, since Nuxt 4.6 drops the link of the shared component's stylesheet itself.
 
 ### Disable Prefetch Links for Dynamic Imports
 

@@ -88,7 +88,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Nuxt has no equivalent switch. `vite.build.modulePreload: false` reaches Vite, but only governs Vite's own output – the polyfill, and the dependency lists `__vitePreload` warms at runtime. The `<link rel="modulepreload">` tags in the server-rendered HTML come from Nuxt's client manifest and stay.
+`vite.build.modulePreload: false` does not remove these links: it governs only Vite's own output, and the `<link rel="modulepreload">` tags in the server-rendered HTML come from Nuxt's client manifest.
 
 ### Why Nuxt Has No Equivalent Switch
 

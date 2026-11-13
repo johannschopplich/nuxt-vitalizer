@@ -48,9 +48,8 @@ export default defineNuxtModule<ModuleOptions>({
     if ('disableStylesheets' in options)
       useLogger(name).warn('`disableStylesheets` has been removed: Nuxt 4.6 fixed the duplicate stylesheet links it worked around (https://github.com/nuxt/nuxt/issues/35255). Delete it from your `vitalizer` options.')
 
-    // Bail before the hook so that its log stays out of `nuxt prepare` and every dev start.
-    // `_prepare` is private, but it is the only signal that this run is `nuxt prepare`.
-    if (nuxt.options._prepare || nuxt.options.dev)
+    // Leaves the dev manifest as Nuxt builds it, so `nuxt dev` renders every hint.
+    if (nuxt.options.dev)
       return
 
     if (!options.disablePrefetchLinks && !options.disablePreloadLinks)

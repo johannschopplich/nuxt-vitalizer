@@ -20,10 +20,12 @@ describe('disablePrefetchLinks (false)', async () => {
     html = await $fetch<string>('/')
   })
 
-  // Proves Nuxt emits these unaided, so the zeros in the other suites mean something. This is also
-  // the state in which the module registers no hook at all.
-  it('renders a prefetch link for the chunk of the unmounted cookie banner', () => {
-    expect(prefetched(html, 'script')).toHaveLength(3)
+  // Proves Nuxt prefetches the banner chunk unaided, so the script prefetch zeros in the other suites
+  // mean something.
+  it('renders a prefetch link for the chunk of the unmounted cookie banner', async () => {
+    const chunks = await Promise.all(prefetched(html, 'script').map(link => $fetch<string>(link.href)))
+
+    expect(chunks).toContainEqual(expect.stringContaining('CookieBanner'))
   })
 
   it('renders the link counts the README states', () => {

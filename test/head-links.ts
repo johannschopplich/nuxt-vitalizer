@@ -4,16 +4,6 @@ export interface HeadLink {
   href: string
 }
 
-export function headLinks(html: string): HeadLink[] {
-  return [
-    ...html.matchAll(/<link\b([^>]*)>/g),
-  ].map(([, attributes]) => ({
-    rel: attribute(attributes!, 'rel') ?? '',
-    as: attribute(attributes!, 'as'),
-    href: attribute(attributes!, 'href') ?? '',
-  }))
-}
-
 export function prefetched(html: string, as: string): HeadLink[] {
   return headLinks(html).filter(link => link.rel === 'prefetch' && link.as === as)
 }
@@ -30,6 +20,16 @@ export function linkCounts(html: string): Record<string, number> {
     prefetchImage: prefetched(html, 'image').length,
     stylesheet: countLinks(html, 'stylesheet'),
   }
+}
+
+function headLinks(html: string): HeadLink[] {
+  return [
+    ...html.matchAll(/<link\b([^>]*)>/g),
+  ].map(([, attributes]) => ({
+    rel: attribute(attributes!, 'rel') ?? '',
+    as: attribute(attributes!, 'as'),
+    href: attribute(attributes!, 'href') ?? '',
+  }))
 }
 
 // A leading `\b` would match the tail of `data-rel` too, since a hyphen counts as a word boundary.

@@ -16,7 +16,7 @@ export interface ModuleOptions {
   disablePrefetchLinks?: boolean | 'dynamicImports'
 
   /**
-   * Whether to remove preload and `modulepreload` links from the HTML.
+   * Whether to remove `modulepreload` links from the HTML.
    *
    * @remarks
    * The browser then discovers each chunk through the module graph instead of up front, which

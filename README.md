@@ -22,13 +22,15 @@ Better Largest Contentful Paint scores for your [Nuxt](https://nuxt.com) app in 
 > [!NOTE]
 > Requires Nuxt 4. The module edits the client manifest, so it does nothing during `nuxt dev` and `nuxt prepare` – build the app to see its effect.
 
+Install the package and add it to the `modules` section of your Nuxt configuration in one step:
+
 ```bash
 npx nuxt module add vitalizer
 ```
 
 ## Basic Usage
 
-Add `nuxt-vitalizer` to the `modules` section of your Nuxt configuration:
+The command registers the module without options:
 
 ```ts
 // `nuxt.config.ts`

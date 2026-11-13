@@ -51,7 +51,7 @@ Measured on Nuxt 4.6.4 with the fixture in `test/fixture`: three routes, one com
 | `disablePrefetchLinks: false` | 4 | 3 | 1 | 2 |
 | `disablePrefetchLinks: false`, `disablePreloadLinks: true` | 0 | 0 | 1 | 2 |
 
-Row three is what Nuxt does on its own. Row four adds `disablePreloadLinks` to row three, and the script prefetches go with the `modulepreload` links, because Nuxt derives them from the preload set. The two stylesheets in every row are the global one and the one imported from the `.ts` module; Nuxt inlined neither, so each link is the only copy of its rules.
+Row three is what Nuxt does on its own. Row four adds `disablePreloadLinks` to row three, and the script prefetches go with the `modulepreload` links, because Nuxt derives them from the preload set.
 
 ### Disable Prefetch Links for Dynamic Imports
 

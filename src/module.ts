@@ -79,12 +79,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.hook('build:manifest', (manifest) => {
       const isInlineStylesEnabled = Boolean(nuxt.options.features.inlineStyles)
+      let isManifestChanged = false
 
       for (const entry of Object.values(manifest)) {
-        stripResourceHints(entry, options, isInlineStylesEnabled, inlinedStylesheets)
+        if (stripResourceHints(entry, options, isInlineStylesEnabled, inlinedStylesheets))
+          isManifestChanged = true
       }
 
-      useLogger(name).success('Optimized Web Vitals')
+      if (isManifestChanged)
+        useLogger(name).success('Optimized Web Vitals')
     })
   },
 })

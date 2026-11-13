@@ -1,11 +1,7 @@
 import type { ResourceMeta } from 'vue-bundle-renderer'
 import type { ModuleOptions } from './module'
 
-/**
- * Strips the resource hints the options disable from one manifest entry.
- *
- * @returns Whether the entry changed
- */
+/** @returns Whether the entry changed */
 export function stripResourceHints(entry: ResourceMeta, options: ModuleOptions): boolean {
   let isChanged = false
 

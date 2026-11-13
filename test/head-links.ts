@@ -5,7 +5,9 @@ export interface HeadLink {
 }
 
 export function headLinks(html: string): HeadLink[] {
-  return [...html.matchAll(/<link\b([^>]*)>/g)].map(([, attributes]) => ({
+  return [
+    ...html.matchAll(/<link\b([^>]*)>/g),
+  ].map(([, attributes]) => ({
     rel: attribute(attributes!, 'rel') ?? '',
     as: attribute(attributes!, 'as'),
     href: attribute(attributes!, 'href') ?? '',

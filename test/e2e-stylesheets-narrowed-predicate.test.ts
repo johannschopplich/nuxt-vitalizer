@@ -19,7 +19,9 @@ describe('disableStylesheets (true) with a narrowed inline-styles predicate', as
     const html = await $fetch<string>('/')
 
     expect(headLinks(html).filter(link => link.rel === 'stylesheet')).toContainEqual(
-      expect.objectContaining({ href: expect.stringContaining('BaseCard') }),
+      expect.objectContaining({
+        href: expect.stringContaining('BaseCard'),
+      }),
     )
     expect(html).not.toContain('.base-card')
   })

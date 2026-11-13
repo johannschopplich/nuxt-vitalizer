@@ -26,6 +26,11 @@ describe('disablePrefetchLinks (true)', async () => {
   })
 
   it('renders the link counts the README states', () => {
-    expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 0, prefetchImage: 0, stylesheet: 3 })
+    expect(linkCounts(html)).toEqual({
+      modulepreload: 4,
+      prefetchScript: 0,
+      prefetchImage: 0,
+      stylesheet: 3,
+    })
   })
 })

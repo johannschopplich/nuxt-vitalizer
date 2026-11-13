@@ -22,7 +22,9 @@ describe('disableStylesheets (true) without inline styles', async () => {
     const html = await $fetch<string>('/')
 
     expect(headLinks(html).filter(link => link.rel === 'stylesheet')).toContainEqual(
-      expect.objectContaining({ href: expect.stringContaining('BaseCard') }),
+      expect.objectContaining({
+        href: expect.stringContaining('BaseCard'),
+      }),
     )
     expect(html).not.toContain('.base-card')
   })

@@ -29,6 +29,11 @@ describe('default options', async () => {
   })
 
   it('renders the link counts the README states', () => {
-    expect(linkCounts(html)).toEqual({ modulepreload: 4, prefetchScript: 0, prefetchImage: 1, stylesheet: 3 })
+    expect(linkCounts(html)).toEqual({
+      modulepreload: 4,
+      prefetchScript: 0,
+      prefetchImage: 1,
+      stylesheet: 3,
+    })
   })
 })

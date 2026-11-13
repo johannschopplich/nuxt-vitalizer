@@ -48,12 +48,19 @@ describe('disablePreloadLinks (true)', async () => {
     const contact = await $fetch<string>('/contact')
 
     expect(prefetched(contact, 'style')).toContainEqual(
-      expect.objectContaining({ href: expect.stringContaining('lazy-widget') }),
+      expect.objectContaining({
+        href: expect.stringContaining('lazy-widget'),
+      }),
     )
     expect(prefetched(contact, 'script')).toHaveLength(0)
   })
 
   it('renders the link counts the README states', () => {
-    expect(linkCounts(html)).toEqual({ modulepreload: 0, prefetchScript: 0, prefetchImage: 1, stylesheet: 3 })
+    expect(linkCounts(html)).toEqual({
+      modulepreload: 0,
+      prefetchScript: 0,
+      prefetchImage: 1,
+      stylesheet: 3,
+    })
   })
 })

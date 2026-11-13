@@ -5,7 +5,7 @@ describe('stripResourceHints', () => {
   it('returns false for an entry it leaves unchanged', () => {
     const entry = { file: 'entry.js', resourceType: 'script' as const }
 
-    expect(stripResourceHints(entry, { disablePrefetchLinks: 'dynamicImports' }, true, new Set())).toBe(false)
+    expect(stripResourceHints(entry, { disablePrefetchLinks: 'dynamicImports' })).toBe(false)
   })
 
   it('returns true once it clears the dynamic imports', () => {
@@ -15,6 +15,6 @@ describe('stripResourceHints', () => {
       dynamicImports: ['CookieBanner.vue'],
     }
 
-    expect(stripResourceHints(entry, { disablePrefetchLinks: 'dynamicImports' }, true, new Set())).toBe(true)
+    expect(stripResourceHints(entry, { disablePrefetchLinks: 'dynamicImports' })).toBe(true)
   })
 })

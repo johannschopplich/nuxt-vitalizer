@@ -1,7 +1,6 @@
 import { defineNuxtModule, useLogger } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import { stripResourceHints } from './manifest'
-import { collectInlinedStylesheets } from './stylesheets'
 
 export interface ModuleOptions {
   /**
@@ -30,19 +29,6 @@ export interface ModuleOptions {
    * @default false
    */
   disablePreloadLinks?: boolean
-
-  /**
-   * Whether to remove the render-blocking stylesheet links whose styles Nuxt already inlined.
-   *
-   * @remarks
-   * Only takes effect while `features.inlineStyles` is on, since the inlined styles are what makes
-   * a link redundant. A stylesheet is removed only once every rule in it comes from a Vue component
-   * style block, which is narrower than what Nuxt inlines – so global CSS from `nuxt.config`, and
-   * any stylesheet a `.css` import contributes to, keep their link.
-   *
-   * @default false
-   */
-  disableStylesheets?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -51,38 +37,30 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey: 'vitalizer',
     compatibility: {
-      nuxt: '>=4.0.0',
+      nuxt: '>=4.6.0',
     },
   },
   defaults: {
     disablePrefetchLinks: 'dynamicImports',
     disablePreloadLinks: false,
-    disableStylesheets: false,
   },
   setup(options, nuxt) {
-    // Bail before the hook so that `nuxt prepare` and every dev start stay silent. `_prepare` is
-    // private, but it is the only signal that this run is `nuxt prepare`.
+    if ('disableStylesheets' in options)
+      useLogger(name).warn('`disableStylesheets` has been removed: Nuxt 4.6 fixed the duplicate stylesheet links it worked around (https://github.com/nuxt/nuxt/issues/35255). Delete it from your `vitalizer` options.')
+
+    // Bail before the hook so that its log stays out of `nuxt prepare` and every dev start.
+    // `_prepare` is private, but it is the only signal that this run is `nuxt prepare`.
     if (nuxt.options._prepare || nuxt.options.dev)
       return
 
-    if (!options.disablePrefetchLinks && !options.disablePreloadLinks && !options.disableStylesheets)
+    if (!options.disablePrefetchLinks && !options.disablePreloadLinks)
       return
 
-    const inlinedStylesheets = new Set<string>()
-
-    if (options.disableStylesheets) {
-      nuxt.hook('vite:extendConfig', (config, { isClient }) => {
-        if (isClient)
-          config.plugins?.push(collectInlinedStylesheets(inlinedStylesheets, nuxt.options.features.inlineStyles))
-      })
-    }
-
     nuxt.hook('build:manifest', (manifest) => {
-      const isInlineStylesEnabled = Boolean(nuxt.options.features.inlineStyles)
       let isManifestChanged = false
 
       for (const entry of Object.values(manifest)) {
-        if (stripResourceHints(entry, options, isInlineStylesEnabled, inlinedStylesheets))
+        if (stripResourceHints(entry, options))
           isManifestChanged = true
       }
 

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { countLinks, linkCounts, prefetched } from './head-links'
+import { headLinks, linkCounts, prefetched } from './head-links'
 
 describe('default options', async () => {
   await setup({
@@ -23,9 +23,13 @@ describe('default options', async () => {
     expect(prefetched(html, 'image')).toHaveLength(1)
   })
 
-  it('serves the shared chunk styles both inlined and as a link', () => {
+  it('inlines the shared chunk styles without a stylesheet link', () => {
     expect(html).toContain('.base-card')
-    expect(countLinks(html, 'stylesheet')).toBe(3)
+    expect(headLinks(html).filter(link => link.rel === 'stylesheet')).not.toContainEqual(
+      expect.objectContaining({
+        href: expect.stringContaining('BaseCard'),
+      }),
+    )
   })
 
   it('renders the link counts the README states', () => {
@@ -33,7 +37,7 @@ describe('default options', async () => {
       modulepreload: 4,
       prefetchScript: 0,
       prefetchImage: 1,
-      stylesheet: 3,
+      stylesheet: 2,
     })
   })
 })

@@ -40,7 +40,7 @@ describe('disablePreloadLinks (true)', async () => {
 
   // A stylesheet carries a preload flag too, but the render-blocking link is not derived from it.
   it('keeps every stylesheet link', () => {
-    expect(countLinks(html, 'stylesheet')).toBe(3)
+    expect(countLinks(html, 'stylesheet')).toBe(2)
   })
 
   // It enters the prefetch set through `dynamicDeps`, which the preload set has no say over.
@@ -60,7 +60,7 @@ describe('disablePreloadLinks (true)', async () => {
       modulepreload: 0,
       prefetchScript: 0,
       prefetchImage: 1,
-      stylesheet: 3,
+      stylesheet: 2,
     })
   })
 })

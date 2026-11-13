@@ -23,15 +23,15 @@ describe('disablePrefetchLinks (false)', async () => {
   // Proves Nuxt emits these unaided, so the zeros in the other suites mean something. This is also
   // the state in which the module registers no hook at all.
   it('renders a prefetch link for the chunk of the unmounted cookie banner', () => {
-    expect(prefetched(html, 'script')).toHaveLength(2)
+    expect(prefetched(html, 'script')).toHaveLength(3)
   })
 
   it('renders the link counts the README states', () => {
     expect(linkCounts(html)).toEqual({
       modulepreload: 4,
-      prefetchScript: 2,
+      prefetchScript: 3,
       prefetchImage: 1,
-      stylesheet: 3,
+      stylesheet: 2,
     })
   })
 })

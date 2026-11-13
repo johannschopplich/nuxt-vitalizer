@@ -30,7 +30,7 @@ describe('disablePrefetchLinks (true)', async () => {
       modulepreload: 4,
       prefetchScript: 0,
       prefetchImage: 0,
-      stylesheet: 3,
+      stylesheet: 2,
     })
   })
 })

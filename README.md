@@ -107,9 +107,11 @@ Nuxt does prune individual bad hints as they are found, for example in [nuxt#353
 | `disablePrefetchLinks` | `boolean \| 'dynamicImports'` | `'dynamicImports'` | Whether to remove prefetch links from the HTML. `'dynamicImports'` drops only the links Nuxt renders for dynamic imports; `true` drops every prefetch link, images included; `false` disables the feature. |
 | `disablePreloadLinks` | `boolean` | `false` | Whether to remove `modulepreload` links from the HTML. Also drops the script prefetch links of dynamically imported chunks, since Nuxt derives those from the preload set. |
 
-## Migrating to v3
+## Migrating to v4
 
-**Nuxt 4 is required.** Only Nuxt 4 is tested. On anything older, Nuxt skips the module with a warning and builds without it. The last release for Nuxt 3 is v0.10.0.
+**Nuxt 4.6 is required.** On Nuxt 4.0–4.5, Nuxt skips the module with the warning ``Module `nuxt-vitalizer` is disabled due to incompatibility issues`` and builds without it. The last release for Nuxt 4.0–4.5 is v3.0.0, and for Nuxt 3 it is v0.10.0.
+
+**`disableStylesheets` is gone.** It worked around the duplicate stylesheet links of [nuxt#35255](https://github.com/nuxt/nuxt/issues/35255), which Nuxt 4.6 fixed. Delete the key from your `vitalizer` options – until you do, the module warns `` `disableStylesheets` has been removed ``.
 
 ## 💻 Development
 
